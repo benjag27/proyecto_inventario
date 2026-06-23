@@ -2,39 +2,50 @@ package org.phora.domain.model;
 
 public class Product {
 
-  /* ver patron de diseño builder */
   private int id;
   private String name;
   private int stock;
 
-  Product(int id, String name, int stock) {
-    this.id = id;
-    this.name = name;
-    this.stock = stock;
+  // El constructor lo hacemos privado para obligar a usar el Builder
+  private Product(Builder builder) {
+    this.id = builder.id;
+    this.name = builder.name;
+    this.stock = builder.stock;
   }
 
-  public int getId() {
-    return id;
-  }
+  // Getters
+  public int getId() { return id; }
+  public String getName() { return name; }
+  public int getStock() { return stock; }
 
-  public void setId(int id) {
-    this.id = id;
-  }
+  // Setters (En DDD a veces se quitan para hacer el modelo inmutable, pero los dejamos si los necesitas)
+  public void setId(int id) { this.id = id; }
+  public void setName(String name) { this.name = name; }
+  public void setStock(int stock) { this.stock = stock; }
 
-  public String getName() {
-    return name;
-  }
+  // --- AQUÍ EMPIEZA EL PATRÓN BUILDER ---
+  public static class Builder {
+    private int id;
+    private String name;
+    private int stock;
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public Builder id(int id) {
+      this.id = id;
+      return this;
+    }
 
-  public int getStock() {
-    return stock;
-  }
+    public Builder name(String name) {
+      this.name = name;
+      return this;
+    }
 
-  public void setStock(int stock) {
-    this.stock = stock;
-  }
+    public Builder stock(int stock) {
+      this.stock = stock;
+      return this;
+    }
 
+    public Product build() {
+      return new Product(this);
+    }
+  }
 }

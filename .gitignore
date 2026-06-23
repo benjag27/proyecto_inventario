@@ -38,5 +38,6 @@ build/
 ### Mac OS ###
 .DS_Store
 
-
+###Base de datos
+**/src/main/java/org/phora/infrastructure/persistence/BsConfig.java
 myreadme.txt
