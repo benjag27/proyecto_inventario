@@ -10,6 +10,7 @@ public class AppContext {
     private final AddProduct addProductUseCase;
 
     public AppContext() {
+
         // 1. Instanciamos la persistencia (infraestructura)
         this.productRepository = new ProductRepositoryImpl();
 
