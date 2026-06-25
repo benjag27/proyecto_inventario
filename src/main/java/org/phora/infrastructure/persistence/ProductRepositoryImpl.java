@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public class ProductRepositoryImpl implements ProductRepository {
 
-    // Método auxiliar para conectar con tu base de datos
+   //conectar a la base de datos
     private Connection getConnection() throws SQLException {
         return BsConfig.getConnection();
     }

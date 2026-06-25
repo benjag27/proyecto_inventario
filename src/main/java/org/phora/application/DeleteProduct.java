@@ -10,7 +10,7 @@ public class DeleteProduct {
 
     private  ProductRepository productRepository;
 
-    public DeleteProduct(ProductRepository repository) {
+    public DeleteProduct(ProductRepository productRepository) {
 
         this.productRepository = productRepository;
 

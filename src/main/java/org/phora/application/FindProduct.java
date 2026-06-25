@@ -10,7 +10,7 @@ public class FindProduct {
 
     private  ProductRepository productRepository;
 
-    public FindProduct(ProductRepository repository) {
+    public FindProduct(ProductRepository productRepository) {
 
         this.productRepository = productRepository;
 

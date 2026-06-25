@@ -10,7 +10,7 @@ public class UpdateProduct{
 
     private  ProductRepository productRepository;
 
-    public UpdateProduct(ProductRepository repository) {
+    public UpdateProduct(ProductRepository productRepository) {
 
         this.productRepository = productRepository;
 
