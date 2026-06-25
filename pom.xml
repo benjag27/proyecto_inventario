@@ -43,6 +43,12 @@
             <version>8.4.0</version>
         </dependency>
 
+        <!-- Hashing jBCrypt-->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
 
     </dependencies>
 
