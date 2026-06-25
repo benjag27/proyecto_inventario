@@ -10,7 +10,7 @@ public class Product {
   private Product(Builder builder) {
     this.id = builder.id;
     this.name = builder.name;
-    this.stock = builder.stock;
+    this.stock = builder.stock;git
   }
 
   // Getters
