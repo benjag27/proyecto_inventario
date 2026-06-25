@@ -15,6 +15,7 @@ public class AddProduct {
 
     // 3. El método para ejecutar el caso de uso
     public void execute(String name, int stock) {
+
         // Podrías meter validaciones de negocio aquí si quisieras:
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre del producto no puede estar vacío");

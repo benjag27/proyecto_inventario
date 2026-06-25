@@ -2,8 +2,10 @@ package org.phora;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+
 import org.phora.infrastructure.AppContext;
 import org.phora.presentation.ProductView;
+import org.phora.presentation.SceneManager;
 
 public class Main extends Application {
 
@@ -16,11 +18,13 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        // Instanciamos tu ProductView pasándole el caso de uso que necesita
+    public void start(Stage primaryStage) {
+        // SceneManager es el único que va a tocar primaryStage de ahora en más
+        SceneManager sceneManager = new SceneManager(primaryStage);
+
+        // ProductView solo construye su Scene, no conoce el Stage
         ProductView productView = new ProductView(context.getAddProductUseCase());
 
-        // Aquí podrías usar tu SceneManager si maneja las ventanas, o iniciar la vista directo:
-        productView.start(primaryStage);
+        sceneManager.mostrar(productView.crearScene(), "Gestión de Inventario");
     }
 }
