@@ -24,10 +24,10 @@ public class ProductRepositoryImpl implements ProductRepository {
             stmt.setInt(2, p.getStock());
             stmt.executeUpdate();
 
-            System.out.println("✅ Producto '" + p.getName() + "' agregado con éxito.");
+            System.out.println("Producto '" + p.getName() + "' agregado con éxito.");
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al agregar el producto: " + e.getMessage());
+            System.err.println("Error al agregar el producto: " + e.getMessage());
         }
     }
 
@@ -43,10 +43,10 @@ public class ProductRepositoryImpl implements ProductRepository {
             stmt.setInt(3, p.getId());
             stmt.executeUpdate();
 
-            System.out.println("✅ Producto con ID " + p.getId() + " actualizado con éxito.");
+            System.out.println("Producto con ID " + p.getId() + " actualizado con éxito.");
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar el producto: " + e.getMessage());
+            System.err.println("Error al actualizar el producto: " + e.getMessage());
         }
     }
 
@@ -60,10 +60,10 @@ public class ProductRepositoryImpl implements ProductRepository {
             stmt.setInt(1, p.getId());
             stmt.executeUpdate();
 
-            System.out.println("✅ Producto con ID " + p.getId() + " eliminado de la base de datos.");
+            System.out.println("Producto con ID " + p.getId() + " eliminado de la base de datos.");
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar el producto: " + e.getMessage());
+            System.err.println("Error al eliminar el producto: " + e.getMessage());
         }
     }
 
@@ -87,7 +87,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar el producto por ID: " + e.getMessage());
+            System.err.println("Error al buscar el producto por ID: " + e.getMessage());
         }
         return Optional.empty();
     }

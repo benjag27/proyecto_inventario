@@ -13,7 +13,6 @@ public class DeleteProduct {
     public DeleteProduct(ProductRepository productRepository) {
 
         this.productRepository = productRepository;
-
     }
 
     public void execute(Integer id) {
@@ -24,8 +23,5 @@ public class DeleteProduct {
         }else{
             System.out.println("No se encontró el producto");
         }
-
-
     }
-
 }

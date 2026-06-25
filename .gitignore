@@ -40,6 +40,5 @@ build/
 
 ###Base de datos
 **/src/main/java/org/phora/infrastructure/persistence/BsConfig.java
-myreadme.txt
 
 ###Documents

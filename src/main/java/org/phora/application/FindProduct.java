@@ -20,8 +20,6 @@ public class FindProduct {
 
         Optional<Product> p  = this.productRepository.findById(id);
         System.out.println(p.get().getName());
-
-
     }
 
 }
