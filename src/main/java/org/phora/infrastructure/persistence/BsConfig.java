@@ -7,8 +7,8 @@ public class BsConfig {
     public static Connection getConnection() {
         try {
             String url = "jdbc:mysql://localhost:3306/inventario";
-            String user = "root";
-            String pass = "root";
+            String user = "admin";
+            String pass = "proyectoInv2306";
 
             return DriverManager.getConnection(url, user, pass);
         } catch (Exception e) {

@@ -1,4 +1,4 @@
-package org.phora.application;
+package org.phora.domain.service;
 
 import org.phora.domain.model.User;
 import org.phora.domain.repository.UserRepository;
@@ -24,6 +24,8 @@ public class LoginService {
 
     // BCrypt compara el password plano con el hash guardado automáticamente
     // checkpw maneja la sal (salt) internamente, por eso es seguro
+    String hash = BCrypt.hashpw("admin123", BCrypt.gensalt());
+    System.out.println(hash);
     return BCrypt.checkpw(rawPassword, user.getPasswordHash());
   }
 }
