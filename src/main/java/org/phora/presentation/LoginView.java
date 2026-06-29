@@ -1,40 +1,105 @@
 package org.phora.presentation;
 
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import org.phora.application.LoginService;
 
+import org.phora.domain.service.LoginService;
+
+/**
+ * Pantalla de inicio de sesión. Solo construye su Scene y, ante un
+ * login exitoso, le pide al SceneManager que navegue al menú principal.
+ * No conoce el Stage directamente (mismo patrón que ProductView).
+ */
 public class LoginView {
 
   private final LoginService loginService;
-  private final SceneManager sceneManager; // Lo necesitamos para cambiar de escena
+  private final SceneManager sceneManager;
+
+  private final Label lblError = new Label();
 
   public LoginView(LoginService loginService, SceneManager sceneManager) {
     this.loginService = loginService;
     this.sceneManager = sceneManager;
   }
 
+  /** Ancho y alto fijos de la ventana de login — Main/SceneManager los usan para bloquear el resize. */
+  public static final double WIDTH = 480;
+  public static final double HEIGHT = 480;
+
   public Scene crearScene() {
-    TextField txtUser = new TextField();
-    txtUser.setPromptText("Usuario");
+    Label titulo = new Label("Inventario");
+    titulo.getStyleClass().add("login-title");
 
-    PasswordField txtPass = new PasswordField(); // ¡Usa PasswordField para ocultar la pass!
-    txtPass.setPromptText("Contraseña");
+    Label subtitulo = new Label("Iniciá sesión para continuar");
+    subtitulo.getStyleClass().add("login-subtitle");
 
-    Button btnLogin = new Button("Ingresar");
-    Label lblError = new Label();
+    TextField txtUsername = new TextField();
+    txtUsername.setPromptText("Usuario");
+    txtUsername.getStyleClass().add("field");
 
-    btnLogin.setOnAction(e -> {
-      if (loginService.authenticate(txtUser.getText(), txtPass.getText())) {
-        // Si es exitoso, le pedimos al sceneManager que cambie a la vista de inventario
-        sceneManager.mostrarInventario();
-      } else {
-        lblError.setText("Usuario o contraseña incorrectos");
-      }
-    });
+    PasswordField txtPassword = new PasswordField();
+    txtPassword.setPromptText("Contraseña");
+    txtPassword.getStyleClass().add("field");
 
-    VBox layout = new VBox(10, txtUser, txtPass, btnLogin, lblError);
-    return new Scene(layout, 300, 200);
+    lblError.getStyleClass().add("error-label");
+    lblError.setVisible(false);
+    lblError.setManaged(false); // no ocupa espacio mientras está oculto, evita saltos de layout
+
+    Button btnLogin = new Button("Iniciar sesión");
+    btnLogin.getStyleClass().add("btn-primary");
+    btnLogin.setMaxWidth(Double.MAX_VALUE);
+    btnLogin.setOnAction(e -> onLoginClick(txtUsername.getText(), txtPassword.getText()));
+
+    // Enter en cualquiera de los dos campos también intenta loguear
+    txtUsername.setOnAction(e -> btnLogin.fire());
+    txtPassword.setOnAction(e -> btnLogin.fire());
+
+    VBox encabezado = new VBox(6, titulo, subtitulo);
+    encabezado.setAlignment(Pos.CENTER_LEFT);
+
+    VBox campos = new VBox(12, txtUsername, txtPassword, lblError, btnLogin);
+    campos.setPadding(new Insets(28, 0, 0, 0));
+
+    // Mismo padding en los 4 lados -> la tarjeta queda simétrica de verdad,
+    // en vez de depender de que el contenido "rellene" un alto fijo.
+    VBox contenido = new VBox(encabezado, campos);
+    contenido.getStyleClass().add("login-card");
+    contenido.setPadding(new Insets(40));
+    contenido.setMaxWidth(340);
+    contenido.setMinWidth(340);
+
+    StackPane root = new StackPane(contenido);
+    root.getStyleClass().add("root");
+
+    Scene scene = new Scene(root, WIDTH, HEIGHT);
+    scene.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
+    return scene;
+  }
+
+  private void onLoginClick(String username, String password) {
+    if (username.isBlank() || password.isBlank()) {
+      mostrarError("Completá usuario y contraseña.");
+      return;
+    }
+
+    boolean valido = loginService.authenticate(username, password);
+
+    if (valido) {
+      sceneManager.mostrarMenuPrincipal();
+    } else {
+      mostrarError("Usuario o contraseña incorrectos.");
+    }
+  }
+
+  private void mostrarError(String mensaje) {
+    lblError.setText(mensaje);
+    lblError.setVisible(true);
   }
 }

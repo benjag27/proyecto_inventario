@@ -1,7 +1,7 @@
 package org.phora.infrastructure;
 
 import org.phora.application.AddProduct;
-import org.phora.application.LoginService;
+import org.phora.domain.service.LoginService;
 import org.phora.domain.repository.ProductRepository;
 import org.phora.domain.repository.UserRepository;
 import org.phora.infrastructure.persistence.ProductRepositoryImpl;
