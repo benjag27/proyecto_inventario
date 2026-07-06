@@ -24,6 +24,6 @@ public class Main extends Application {
         SceneManager sceneManager = new SceneManager(primaryStage, context);
 
         // 3. Arrancamos el flujo
-        sceneManager.mostrarLogin();
+        sceneManager.showLogin();
     }
 }

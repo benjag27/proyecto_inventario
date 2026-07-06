@@ -7,21 +7,30 @@ import java.util.Optional;
 
 public class UpdateProduct {
 
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     public UpdateProduct(ProductRepository productRepository) {
-
         this.productRepository = productRepository;
     }
 
-    public void execute(String name, int stock, int id) {
-
+    /**
+     * Busca el producto por id, le aplica los nuevos valores y persiste
+     * el cambio. Devuelve true si se encontró y actualizó, false si el
+     * id no existía — así la UI sabe qué mensaje mostrar sin tener que
+     * adivinar mirando un Optional vacío que no le llega.
+     */
+    public boolean execute(String name, int stock, int id) {
         Optional<Product> p = this.productRepository.findById(id);
-        if (p.isPresent()) {
-            p.get().setName(name);
-            p.get().setStock(stock);
-        } else {
-            System.out.println("Product to update not founded");
+
+        if (p.isEmpty()) {
+            return false;
         }
+
+        Product producto = p.get();
+        producto.setName(name);
+        producto.setStock(stock);
+
+        this.productRepository.update(producto);
+        return true;
     }
 }
