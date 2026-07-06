@@ -7,21 +7,24 @@ import java.util.Optional;
 
 public class DeleteProduct {
 
-
-    private  ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     public DeleteProduct(ProductRepository productRepository) {
-
         this.productRepository = productRepository;
     }
 
-    public void execute(Integer id) {
+    /**
+     * Devuelve true si el producto existía y se eliminó, false si no
+     * se encontró — para que la UI pueda mostrar el mensaje correcto.
+     */
+    public boolean execute(Integer id) {
+        Optional<Product> p = this.productRepository.findById(id);
 
-        Optional<Product> p  = this.productRepository.findById(id);
-        if(p.isPresent()) {
-            this.productRepository.delete(p.get());
-        }else{
-            System.out.println("No se encontró el producto");
+        if (p.isEmpty()) {
+            return false;
         }
+
+        this.productRepository.delete(p.get());
+        return true;
     }
 }

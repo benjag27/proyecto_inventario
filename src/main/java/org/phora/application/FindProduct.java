@@ -7,19 +7,14 @@ import java.util.Optional;
 
 public class FindProduct {
 
-
-    private  ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     public FindProduct(ProductRepository productRepository) {
-
         this.productRepository = productRepository;
-
     }
 
-    public void execute(Integer id) {
 
-        Optional<Product> p  = this.productRepository.findById(id);
-        System.out.println(p.get().getName());
+    public Optional<Product> execute(Integer id) {
+        return this.productRepository.findById(id);
     }
-
 }

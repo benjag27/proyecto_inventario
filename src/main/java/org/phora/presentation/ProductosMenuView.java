@@ -3,50 +3,49 @@ package org.phora.presentation;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import org.phora.infrastructure.AppContext;
 
 /**
- * Menú principal post-login: una tarjeta-botón por funcionalidad.
- * Cada tarjeta navega a su propia vista a través del SceneManager.
- * Las funcionalidades que todavía no están implementadas muestran
- * un aviso "Próximamente" en vez de romper la navegación.
+ * Submenú de la sección Productos: una tarjeta por operación
+ * (alta, modificar, baja, buscar). Mismo lenguaje visual que
+ * MenuPrincipalView, para mantener consistencia.
  */
-public class MenuPrincipalView {
+public class ProductosMenuView {
 
     private final AppContext context;
     private final SceneManager sceneManager;
-    public static final double WIDTH = 1240;
-    public static final double HEIGHT = 990;
+    public static final double WIDTH = 480;
+    public static final double HEIGHT = 480;
 
-    public MenuPrincipalView(AppContext context, SceneManager sceneManager) {
+    public ProductosMenuView(AppContext context, SceneManager sceneManager) {
         this.context = context;
         this.sceneManager = sceneManager;
     }
 
     public Scene createScene() {
-        Label titulo = new Label("Panel de inventario");
+        Label titulo = new Label("Productos");
         titulo.getStyleClass().add("menu-header");
 
-        Label subtitulo = new Label("Elegí qué querés gestionar");
+        Label subtitulo = new Label("Elegí qué operación querés realizar");
         subtitulo.getStyleClass().add("menu-subheader");
 
         VBox encabezado = new VBox(4, titulo, subtitulo);
 
-        Hyperlink logout = new Hyperlink("Cerrar sesión");
-        logout.getStyleClass().add("logout-link");
-        logout.setOnAction(e -> sceneManager.showLogin());
+        Hyperlink volver = new Hyperlink("← Volver al panel");
+        volver.getStyleClass().add("logout-link");
+        volver.setOnAction(e -> sceneManager.showMainMenu());
 
         HBox top = new HBox(encabezado);
-        HBox.setHgrow(encabezado, javafx.scene.layout.Priority.ALWAYS);
-        top.getChildren().add(logout);
+        HBox.setHgrow(encabezado, Priority.ALWAYS);
+        top.getChildren().add(volver);
         top.setAlignment(Pos.TOP_RIGHT);
         top.setPadding(new Insets(0, 0, 28, 0));
 
@@ -54,10 +53,14 @@ public class MenuPrincipalView {
         grilla.setHgap(18);
         grilla.setVgap(18);
 
-        grilla.add(createCard("📦", "Productos", "Alta, baja y stock", this::openProducts), 0, 0);
-        grilla.add(createCard("🏷️", "Categorías", "Organizá tus rubros", this::proximamente), 1, 0);
-        grilla.add(createCard("🔄", "Movimientos", "Entradas y salidas", this::proximamente), 0, 1);
-        grilla.add(createCard("👤", "Usuarios", "Accesos del equipo", this::proximamente), 1, 1);
+        grilla.add(cretaTarget("➕", "Dar de alta", "Agregar un producto nuevo",
+                () -> sceneManager.showProductoForm(ProductoFormView.Modo.ALTA)), 0, 0);
+        grilla.add(cretaTarget("✏️", "Modificar", "Editar un producto existente",
+                () -> sceneManager.showProductoForm(ProductoFormView.Modo.MODIFICAR)), 1, 0);
+        grilla.add(cretaTarget("🗑️", "Dar de baja", "Eliminar un producto",
+                () -> sceneManager.showProductoForm(ProductoFormView.Modo.BAJA)), 0, 1);
+        grilla.add(cretaTarget("🔍", "Buscar", "Consultar productos existentes",
+                () -> sceneManager.showProductoForm(ProductoFormView.Modo.BUSCAR)), 1, 1);
 
         VBox contenido = new VBox(top, grilla);
         contenido.setPadding(new Insets(40));
@@ -65,12 +68,12 @@ public class MenuPrincipalView {
         BorderPane root = new BorderPane(contenido);
         root.getStyleClass().add("root");
 
-        Scene scene = new Scene(root, 1920, 1040);
+        Scene scene = new Scene(root, 640, 480);
         scene.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
         return scene;
     }
 
-    private VBox createCard(String icono, String titulo, String descripcion, Runnable accion) {
+    private VBox cretaTarget(String icono, String titulo, String descripcion, Runnable accion) {
         Label lblIcono = new Label(icono);
         lblIcono.getStyleClass().add("feature-icon");
 
@@ -86,15 +89,5 @@ public class MenuPrincipalView {
         tarjeta.setOnMouseClicked(e -> accion.run());
 
         return tarjeta;
-    }
-
-    private void openProducts() {
-        sceneManager.showProductMenu();
-    }
-
-    private void proximamente() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Esta sección todavía no está disponible.");
-        alert.setHeaderText("Próximamente");
-        alert.showAndWait();
     }
 }

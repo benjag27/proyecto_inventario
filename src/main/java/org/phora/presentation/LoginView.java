@@ -15,7 +15,7 @@ import org.phora.domain.service.LoginService;
 /**
  * Pantalla de inicio de sesión. Solo construye su Scene y, ante un
  * login exitoso, le pide al SceneManager que navegue al menú principal.
- * No conoce el Stage directamente (mismo patrón que ProductView).
+ * No conoce el Stage directamente (mismo patrón que ProductView.java).
  */
 public class LoginView {
 
@@ -33,7 +33,7 @@ public class LoginView {
   public static final double WIDTH = 480;
   public static final double HEIGHT = 480;
 
-  public Scene crearScene() {
+  public Scene createScene() {
     Label titulo = new Label("Inventario");
     titulo.getStyleClass().add("login-title");
 
@@ -72,8 +72,8 @@ public class LoginView {
     VBox contenido = new VBox(encabezado, campos);
     contenido.getStyleClass().add("login-card");
     contenido.setPadding(new Insets(40));
-    contenido.setMaxWidth(340);
-    contenido.setMinWidth(340);
+    contenido.setMaxWidth(WIDTH);
+    contenido.setMinWidth(HEIGHT);
 
     StackPane root = new StackPane(contenido);
     root.getStyleClass().add("root");
@@ -92,7 +92,7 @@ public class LoginView {
     boolean valido = loginService.authenticate(username, password);
 
     if (valido) {
-      sceneManager.mostrarMenuPrincipal();
+      sceneManager.showMainMenu();
     } else {
       mostrarError("Usuario o contraseña incorrectos.");
     }
