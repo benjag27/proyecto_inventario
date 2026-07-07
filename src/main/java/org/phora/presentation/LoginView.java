@@ -67,8 +67,7 @@ public class LoginView {
     VBox campos = new VBox(12, txtUsername, txtPassword, lblError, btnLogin);
     campos.setPadding(new Insets(28, 0, 0, 0));
 
-    // Mismo padding en los 4 lados -> la tarjeta queda simétrica de verdad,
-    // en vez de depender de que el contenido "rellene" un alto fijo.
+
     VBox contenido = new VBox(encabezado, campos);
     contenido.getStyleClass().add("login-card");
     contenido.setPadding(new Insets(40));
@@ -85,7 +84,7 @@ public class LoginView {
 
   private void onLoginClick(String username, String password) {
     if (username.isBlank() || password.isBlank()) {
-      mostrarError("Completá usuario y contraseña.");
+      showError("Completá usuario y contraseña.");
       return;
     }
 
@@ -94,11 +93,11 @@ public class LoginView {
     if (valido) {
       sceneManager.showMainMenu();
     } else {
-      mostrarError("Usuario o contraseña incorrectos.");
+      showError("Usuario o contraseña incorrectos.");
     }
   }
 
-  private void mostrarError(String mensaje) {
+  private void showError(String mensaje) {
     lblError.setText(mensaje);
     lblError.setVisible(true);
   }
