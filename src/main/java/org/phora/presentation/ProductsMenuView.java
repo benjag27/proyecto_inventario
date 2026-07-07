@@ -54,13 +54,13 @@ public class ProductsMenuView {
         grilla.setVgap(18);
 
         grilla.add(cretaTarget("➕", "Dar de alta", "Agregar un producto nuevo",
-                () -> sceneManager.showProductoForm(ProductFormView.Modo.ALTA)), 0, 0);
+                () -> sceneManager.showProductForm(ProductFormView.Modo.ALTA)), 0, 0);
         grilla.add(cretaTarget("✏️", "Modificar", "Editar un producto existente",
-                () -> sceneManager.showProductoForm(ProductFormView.Modo.MODIFICAR)), 1, 0);
+                () -> sceneManager.showProductForm(ProductFormView.Modo.MODIFICAR)), 1, 0);
         grilla.add(cretaTarget("🗑️", "Dar de baja", "Eliminar un producto",
-                () -> sceneManager.showProductoForm(ProductFormView.Modo.BAJA)), 0, 1);
+                () -> sceneManager.showProductForm(ProductFormView.Modo.BAJA)), 0, 1);
         grilla.add(cretaTarget("🔍", "Buscar", "Consultar productos existentes",
-                () -> sceneManager.showProductoForm(ProductFormView.Modo.BUSCAR)), 1, 1);
+                () -> sceneManager.showProductForm(ProductFormView.Modo.BUSCAR)), 1, 1);
 
         VBox contenido = new VBox(top, grilla);
         contenido.setPadding(new Insets(40));
