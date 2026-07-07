@@ -9,4 +9,5 @@ module org.phora {
     opens org.phora to javafx.graphics;
     opens org.phora.presentation to javafx.graphics;
     opens org.phora.infrastructure.persistence to java.sql;
+    opens org.phora.domain.model to javafx.base;
 }

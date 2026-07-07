@@ -1,14 +1,12 @@
 package org.phora.infrastructure;
 
-import org.phora.application.AddProduct;
-import org.phora.application.DeleteProduct;
-import org.phora.application.FindProduct;
-import org.phora.application.UpdateProduct;
+import org.phora.application.*;
 import org.phora.domain.repository.ProductRepository;
 import org.phora.domain.repository.UserRepository;
 import org.phora.domain.service.LoginService;
 import org.phora.infrastructure.persistence.ProductRepositoryImpl;
 import org.phora.infrastructure.persistence.UserRepositoryImpl;
+
 
 public class AppContext {
 
@@ -17,7 +15,7 @@ public class AppContext {
     private final UpdateProduct updateProductUseCase;
     private final DeleteProduct deleteProductUseCase;
     private final FindProduct findProductUseCase;
-
+    private final ListProducts  listProductsUseCase;
     private final UserRepository userRepository;
     private final LoginService loginServiceUseCase;
 
@@ -30,6 +28,7 @@ public class AppContext {
         this.updateProductUseCase = new UpdateProduct(this.productRepository);
         this.deleteProductUseCase = new DeleteProduct(this.productRepository);
         this.findProductUseCase = new FindProduct(this.productRepository);
+        this.listProductsUseCase = new ListProducts(this.productRepository);
 
         // 3. Login
         this.userRepository = new UserRepositoryImpl();
@@ -55,4 +54,6 @@ public class AppContext {
     public LoginService getLoginServiceUseCase() {
         return this.loginServiceUseCase;
     }
+
+    public ListProducts getListProductsUseCase()   { return listProductsUseCase; }
 }

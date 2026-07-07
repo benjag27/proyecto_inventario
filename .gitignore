@@ -42,3 +42,7 @@ build/
 **/src/main/java/org/phora/infrastructure/persistence/BsConfig.java
 
 ###Documents
+**target/
+.idea/
+myReadme.txt
+Documents/
