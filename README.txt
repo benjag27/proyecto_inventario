@@ -37,6 +37,6 @@ Para replicar el entorno de desarrollo, compilar el código fuente o generar nue
 
 ### 1. Clonar el repositorio y compilar
 ```bash
-git clone [https://github.com/TU_USUARIO/TU_REPOSITORIO.git](https://github.com/TU_USUARIO/TU_REPOSITORIO.git)
+git clone https://github.com/benjag27/proyecto_inventario.git
 cd proyecto_inventario-main
 mvn clean javafx:jlink
