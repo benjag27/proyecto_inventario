@@ -1,5 +1,6 @@
   package org.phora.domain.repository;
 
+  import java.util.List;
   import java.util.Optional;
 
   import org.phora.domain.model.Product;
@@ -13,4 +14,6 @@
     public void delete(Product p);
 
     public Optional<Product> findById(int id);
+
+     public List<Product> findAll();
   }

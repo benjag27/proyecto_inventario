@@ -5,10 +5,6 @@ import javafx.stage.Stage;
 
 import org.phora.infrastructure.AppContext;
 
-/**
- * Único punto de la app que conoce el Stage real. Cada vista solo
- * construye su propia Scene; SceneManager decide cuándo y cuál mostrar.
- */
 public class SceneManager {
 
     private final Stage stage;
@@ -28,25 +24,32 @@ public class SceneManager {
     }
 
     public void showMainMenu() {
-        MenuPrincipalView menuView = new MenuPrincipalView(context, this);
+        MainMenuView menuView = new MainMenuView(context, this);
         freeSize();
         show(menuView.createScene(), "Inventario — Panel principal");
-        lockSize(MenuPrincipalView.WIDTH, MenuPrincipalView.HEIGHT);
+        lockSize(MainMenuView.WIDTH, MainMenuView.HEIGHT);
         stage.centerOnScreen();
     }
 
-    /** Submenú de Productos: alta, modificar, baja, buscar. */
     public void showProductMenu() {
-        ProductosMenuView productosMenuView = new ProductosMenuView(context, this);
-
-        show(productosMenuView.createScene(), "Inventario — Productos");
-        lockSize(ProductosMenuView.WIDTH, ProductosMenuView.HEIGHT);
+        ProductMenuView productMenuView = new ProductMenuView(context, this);
+        freeSize();
+        show(productMenuView.createScene(), "Inventario — Productos");
+        lockSize(ProductMenuView.WIDTH, ProductMenuView.HEIGHT);
         stage.centerOnScreen();
     }
 
-    /** Formulario único, reutilizado para cada operación de producto. */
-    public void showProductoForm(ProductoFormView.Modo modo) {
-        ProductoFormView formView = new ProductoFormView(context, this, modo);
+    public void showProductList() {
+        ProductListView listView = new ProductListView(context, this);
+        freeSize();
+        show(listView.createScene(), "Inventario — Listado de productos");
+        lockSize(ProductListView.WIDTH, ProductListView.HEIGHT);
+        stage.centerOnScreen();
+    }
+
+    public void showProductForm(ProductFormView.Modo modo) {
+        ProductFormView formView = new ProductFormView(context, this, modo);
+        freeSize();
         show(formView.createScene(), "Inventario — Productos");
         stage.sizeToScene();
         lockSize(stage.getWidth(), stage.getHeight());
@@ -59,13 +62,8 @@ public class SceneManager {
         stage.show();
     }
 
-    /** Fija un tamaño exacto e impide maximizar/redimensionar la ventana. */
     private void lockSize(double width, double height) {
-
-        if (stage.isMaximized()) {
-            stage.setMaximized(false);
-        }
-
+        if (stage.isMaximized()) stage.setMaximized(false);
         stage.setWidth(width);
         stage.setHeight(height);
         stage.setMinWidth(width);
@@ -75,12 +73,8 @@ public class SceneManager {
         stage.setResizable(false);
     }
 
-    /** Libera las restricciones de tamaño para pantallas que sí deben poder redimensionarse. */
     private void freeSize() {
-
-        if (stage.isMaximized()) {
-            stage.setMaximized(false);
-        }
+        if (stage.isMaximized()) stage.setMaximized(false);
         stage.setResizable(true);
         stage.setMinWidth(0);
         stage.setMinHeight(0);

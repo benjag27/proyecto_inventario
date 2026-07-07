@@ -6,10 +6,9 @@ import org.phora.domain.repository.ProductRepository;
 import org.phora.domain.model.Product;
 import org.phora.domain.repository.ProductRepository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class ProductRepositoryImpl implements ProductRepository {
@@ -80,5 +79,28 @@ public class ProductRepositoryImpl implements ProductRepository {
             System.err.println("Error finding product by ID: " + e.getMessage());
         }
         return Optional.empty();
+    }
+    @Override
+    public List<Product> findAll() {
+        String sql = "SELECT * FROM products ORDER BY id";
+        List<Product> products = new ArrayList<>();
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                products.add(buildProduct(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error listing products: " + e.getMessage());
+        }
+        return products;
+    }
+
+    private Product buildProduct(ResultSet rs) throws SQLException {
+        return new Product.Builder()
+                .id(rs.getInt("id"))
+                .name(rs.getString("name"))
+                .stock(rs.getInt("stock"))
+                .build();
     }
 }

@@ -19,14 +19,14 @@ import org.phora.infrastructure.AppContext;
  * Las funcionalidades que todavía no están implementadas muestran
  * un aviso "Próximamente" en vez de romper la navegación.
  */
-public class MenuPrincipalView {
+public class MainMenuView {
 
     private final AppContext context;
     private final SceneManager sceneManager;
     public static final double WIDTH = 1240;
     public static final double HEIGHT = 990;
 
-    public MenuPrincipalView(AppContext context, SceneManager sceneManager) {
+    public MainMenuView(AppContext context, SceneManager sceneManager) {
         this.context = context;
         this.sceneManager = sceneManager;
     }
