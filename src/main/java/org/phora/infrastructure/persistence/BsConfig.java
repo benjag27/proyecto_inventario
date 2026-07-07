@@ -18,7 +18,7 @@ public class BsConfig {
     static {
         // Al cargar la clase, nos aseguramos de que las tablas existan.
         // Si el archivo no existe, SQLite lo crea solo.
-        inicializarBD();
+        initDB();
     }
 
     public static Connection getConnection() {
@@ -33,7 +33,7 @@ public class BsConfig {
      * Crea las tablas si no existen todavía.
      * Se ejecuta una sola vez al arrancar la app.
      */
-    private static void inicializarBD() {
+    private static void initDB() {
         String crearProductos = """
                 CREATE TABLE IF NOT EXISTS products (
                     id    INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,7 +42,7 @@ public class BsConfig {
                 )
                 """;
 
-        String crearUsuarios = """
+        String createUsers = """
                 CREATE TABLE IF NOT EXISTS users (
                     id            INTEGER PRIMARY KEY AUTOINCREMENT,
                     username      TEXT    NOT NULL UNIQUE,
@@ -53,7 +53,7 @@ public class BsConfig {
         try (Connection conn = DriverManager.getConnection(URL);
              Statement stmt = conn.createStatement()) {
             stmt.execute(crearProductos);
-            stmt.execute(crearUsuarios);
+            stmt.execute(createUsers);
         } catch (SQLException e) {
             throw new RuntimeException("Error al inicializar la base de datos", e);
         }

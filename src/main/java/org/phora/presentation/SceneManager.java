@@ -28,25 +28,25 @@ public class SceneManager {
     }
 
     public void showMainMenu() {
-        MenuPrincipalView menuView = new MenuPrincipalView(context, this);
+        MainMenuView menuView = new MainMenuView(context, this);
         freeSize();
         show(menuView.createScene(), "Inventario — Panel principal");
-        lockSize(MenuPrincipalView.WIDTH, MenuPrincipalView.HEIGHT);
+        lockSize(MainMenuView.WIDTH, MainMenuView.HEIGHT);
         stage.centerOnScreen();
     }
 
     /** Submenú de Productos: alta, modificar, baja, buscar. */
     public void showProductMenu() {
-        ProductosMenuView productosMenuView = new ProductosMenuView(context, this);
+        ProductsMenuView productsMenuView = new ProductsMenuView(context, this);
 
-        show(productosMenuView.createScene(), "Inventario — Productos");
-        lockSize(ProductosMenuView.WIDTH, ProductosMenuView.HEIGHT);
+        show(productsMenuView.createScene(), "Inventario — Productos");
+        lockSize(ProductsMenuView.WIDTH, ProductsMenuView.HEIGHT);
         stage.centerOnScreen();
     }
 
     /** Formulario único, reutilizado para cada operación de producto. */
-    public void showProductoForm(ProductoFormView.Modo modo) {
-        ProductoFormView formView = new ProductoFormView(context, this, modo);
+    public void showProductoForm(ProductFormView.Modo modo) {
+        ProductFormView formView = new ProductFormView(context, this, modo);
         show(formView.createScene(), "Inventario — Productos");
         stage.sizeToScene();
         lockSize(stage.getWidth(), stage.getHeight());

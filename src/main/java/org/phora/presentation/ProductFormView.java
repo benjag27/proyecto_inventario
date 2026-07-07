@@ -26,7 +26,7 @@ import java.util.Optional;
  * ALTA, MODIFICAR, BAJA o BUSCAR. Cada modo muestra solo los
  * campos que necesita y llama al caso de uso correspondiente.
  */
-public class ProductoFormView {
+public class ProductFormView {
 
     public enum Modo { ALTA, MODIFICAR, BAJA, BUSCAR }
 
@@ -37,7 +37,7 @@ public class ProductoFormView {
     private final Label lblMensaje = new Label();
 
 
-    public ProductoFormView(AppContext context, SceneManager sceneManager, Modo modo) {
+    public ProductFormView(AppContext context, SceneManager sceneManager, Modo modo) {
         this.context = context;
         this.sceneManager = sceneManager;
         this.modo = modo;
