@@ -43,5 +43,6 @@ build/
 
 ###Documents
 **target/
+.idea/
 myReadme.txt
 Documents/
