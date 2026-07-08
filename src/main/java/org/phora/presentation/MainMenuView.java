@@ -23,8 +23,8 @@ public class MainMenuView {
 
     private final AppContext context;
     private final SceneManager sceneManager;
-    public static final double WIDTH = 1240;
-    public static final double HEIGHT = 990;
+    public static final double WIDTH = 1900;
+    public static final double HEIGHT = 1900;
 
     public MainMenuView(AppContext context, SceneManager sceneManager) {
         this.context = context;
@@ -53,6 +53,8 @@ public class MainMenuView {
         GridPane grilla = new GridPane();
         grilla.setHgap(18);
         grilla.setVgap(18);
+        grilla.setAlignment(Pos.CENTER);
+        VBox.setVgrow(grilla, javafx.scene.layout.Priority.ALWAYS);
 
         grilla.add(createCard("📦", "Productos", "Alta, baja y stock", this::openProducts), 0, 0);
         grilla.add(createCard("🏷️", "Categorías", "Organizá tus rubros", this::proximamente), 1, 0);
@@ -61,11 +63,12 @@ public class MainMenuView {
 
         VBox contenido = new VBox(top, grilla);
         contenido.setPadding(new Insets(40));
+        contenido.setAlignment(Pos.CENTER);
 
         BorderPane root = new BorderPane(contenido);
         root.getStyleClass().add("root");
 
-        Scene scene = new Scene(root, 1920, 1040);
+        Scene scene = new Scene(root, 1420, 840);
         scene.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
         return scene;
     }

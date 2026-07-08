@@ -16,4 +16,5 @@
     public Optional<Product> findById(int id);
 
      public List<Product> findAll();
+    public List<Product> findByName(String name);
   }

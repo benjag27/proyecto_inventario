@@ -12,30 +12,20 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-import org.phora.application.AddProduct;
-import org.phora.application.DeleteProduct;
-import org.phora.application.FindProduct;
-import org.phora.application.UpdateProduct;
 import org.phora.domain.model.Product;
 import org.phora.infrastructure.AppContext;
 
 import java.util.Optional;
 
-/**
- * Un único formulario que se adapta según el Modo recibido:
- * ALTA, MODIFICAR, BAJA o BUSCAR. Cada modo muestra solo los
- * campos que necesita y llama al caso de uso correspondiente.
- */
 public class ProductFormView {
 
-    public enum Modo { ALTA, MODIFICAR, BAJA, BUSCAR }
+    public enum Modo { ALTA, MODIFICAR, BAJA, BUSCAR , BUSCAR_NOMBRE}
 
     private final AppContext context;
     private final SceneManager sceneManager;
     private final Modo modo;
 
-    private final Label lblMensaje = new Label();
-
+    private final Label lblMessage = new Label();
 
     public ProductFormView(AppContext context, SceneManager sceneManager, Modo modo) {
         this.context = context;
@@ -44,205 +34,236 @@ public class ProductFormView {
     }
 
     public Scene createScene() {
-        Label titulo = new Label(tituloSegunModo());
-        titulo.getStyleClass().add("login-title");
+        Label title = new Label(titleForMode());
+        title.getStyleClass().add("login-title");
 
-        Label subtitulo = new Label(subtituloSegunModo());
-        subtitulo.getStyleClass().add("login-subtitle");
+        Label subtitle = new Label(subtitleForMode());
+        subtitle.getStyleClass().add("login-subtitle");
 
-        Hyperlink volver = new Hyperlink("← Volver");
-        volver.getStyleClass().add("logout-link");
-        volver.setOnAction(e -> sceneManager.showProductMenu());
+        Hyperlink back = new Hyperlink("← Volver");
+        back.getStyleClass().add("logout-link");
+        back.setOnAction(e -> sceneManager.showProductMenu());
 
-        VBox encabezado = new VBox(4, titulo, subtitulo);
-        HBox top = new HBox(encabezado);
-        HBox.setHgrow(encabezado, Priority.ALWAYS);
-        top.getChildren().add(volver);
+        VBox heading = new VBox(4, title, subtitle);
+        HBox top = new HBox(heading);
+        HBox.setHgrow(heading, Priority.ALWAYS);
+        top.getChildren().add(back);
         top.setAlignment(Pos.TOP_RIGHT);
 
-        VBox campos = buildField();
+        lblMessage.setVisible(false);
+        lblMessage.setManaged(false);
+        lblMessage.setWrapText(true);
 
-        lblMensaje.getStyleClass().add("error-label");
-        lblMensaje.setVisible(false);
-        lblMensaje.setManaged(false);
-        lblMensaje.setWrapText(true);
+        VBox fields = buildFields();
 
-        VBox contenido = new VBox(20, top, campos, lblMensaje);
-        contenido.getStyleClass().add("login-card");
-        contenido.setPadding(new Insets(40));
-        contenido.setMaxWidth(400);
-        contenido.setMinWidth(400);
+        VBox content = new VBox(20, top, fields, lblMessage);
+        content.getStyleClass().add("login-card");
+        content.setPadding(new Insets(40));
+        content.setMaxWidth(420);
+        content.setMinWidth(420);
 
         BorderPane root = new BorderPane();
         root.getStyleClass().add("root");
-        root.setCenter(contenido);
+        root.setCenter(content);
 
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, 640, 480);
         scene.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
         return scene;
     }
 
-    // ---------- Construcción de campos según el modo ----------
-
-    private VBox buildField() {
+    private VBox buildFields() {
         switch (modo) {
-            case ALTA:
-                return formDischarge();
-            case MODIFICAR:
-                return formModify();
-            case BAJA:
-                return formDelete();
+            case ALTA:     return formAlta();
+            case MODIFICAR: return formModificar();
+            case BAJA:     return formBaja();
             case BUSCAR:
-            default:
-                return formFind();
+            default:       return formBuscar();
+            case BUSCAR_NOMBRE: return formBuscarNombre();
         }
     }
 
-    private VBox formDischarge() {
-        TextField txtName = campoTexto("Nombre del producto");
-        TextField txtStock = campoTexto("Stock inicial");
+    // --- ALTA ---
 
-        Button btn = botonPrincipal("Agregar producto");
+    private VBox formAlta() {
+        TextField txtName  = field("Nombre del producto");
+        TextField txtPrice = field("Precio");
+        TextField txtStock = field("Stock inicial");
+
+        Button btn = primaryButton("Agregar producto");
         btn.setOnAction(e -> {
             try {
-                String name = txtName.getText();
-                int stock = Integer.parseInt(txtStock.getText());
+                String name  = txtName.getText().trim();
+                double price = Double.parseDouble(txtPrice.getText().replace(",", "."));
+                int stock    = Integer.parseInt(txtStock.getText().trim());
 
-                AddProduct addProduct = context.getAddProductUseCase();
-                addProduct.execute(name, stock);
+                context.getAddProductUseCase().execute(name, price, stock);
 
-                mostrarMensaje("Producto agregado correctamente.", false);
+                showMessage("Producto agregado correctamente.", false);
                 txtName.clear();
+                txtPrice.clear();
                 txtStock.clear();
             } catch (NumberFormatException ex) {
-                mostrarMensaje("El stock debe ser un número entero.", true);
+                showMessage("Precio y stock deben ser números válidos.", true);
             } catch (IllegalArgumentException ex) {
-                mostrarMensaje(ex.getMessage(), true);
+                showMessage(ex.getMessage(), true);
             }
         });
 
-        return new VBox(12, txtName, txtStock, btn);
+        return new VBox(12, txtName, txtPrice, txtStock, btn);
     }
 
-    private VBox formModify() {
-        TextField txtId = campoTexto("ID del producto a modificar");
-        TextField txtName = campoTexto("Nuevo nombre");
-        TextField txtStock = campoTexto("Nuevo stock");
+    // --- MODIFICAR ---
 
-        Button btn = botonPrincipal("Guardar cambios");
+    private VBox formModificar() {
+        TextField txtId    = field("ID del producto a modificar");
+        TextField txtName  = field("Nuevo nombre");
+        TextField txtPrice = field("Nuevo precio");
+        TextField txtStock = field("Nuevo stock");
+
+        Button btn = primaryButton("Guardar cambios");
         btn.setOnAction(e -> {
             try {
-                int id = Integer.parseInt(txtId.getText());
-                String name = txtName.getText();
-                int stock = Integer.parseInt(txtStock.getText());
+                int id       = Integer.parseInt(txtId.getText().trim());
+                String name  = txtName.getText().trim();
+                double price = Double.parseDouble(txtPrice.getText().replace(",", "."));
+                int stock    = Integer.parseInt(txtStock.getText().trim());
 
-                UpdateProduct updateProduct = context.getUpdateProductUseCase();
-                boolean actualizado = updateProduct.execute(name, stock, id);
+                boolean updated = context.getUpdateProductUseCase().execute(name, price, stock, id);
 
-                if (actualizado) {
-                    mostrarMensaje("Producto actualizado correctamente.", false);
+                if (updated) {
+                    showMessage("Producto actualizado correctamente.", false);
                 } else {
-                    mostrarMensaje("No se encontró un producto con ese ID.", true);
+                    showMessage("No se encontró un producto con ese ID.", true);
                 }
             } catch (NumberFormatException ex) {
-                mostrarMensaje("ID y stock deben ser números enteros.", true);
+                showMessage("ID, precio y stock deben ser números válidos.", true);
             }
         });
 
-        return new VBox(12, txtId, txtName, txtStock, btn);
+        return new VBox(12, txtId, txtName, txtPrice, txtStock, btn);
     }
 
-    private VBox formDelete() {
-        TextField txtId = campoTexto("ID del producto a eliminar");
+    // --- BAJA ---
 
-        Button btn = botonPrincipal("Eliminar producto");
+    private VBox formBaja() {
+        TextField txtId = field("ID del producto a eliminar");
+
+        Button btn = primaryButton("Eliminar producto");
         btn.setOnAction(e -> {
             try {
-                int id = Integer.parseInt(txtId.getText());
+                int id = Integer.parseInt(txtId.getText().trim());
+                boolean deleted = context.getDeleteProductUseCase().execute(id);
 
-                DeleteProduct deleteProduct = context.getDeleteProductUseCase();
-                boolean eliminado = deleteProduct.execute(id);
-
-                if (eliminado) {
-                    mostrarMensaje("Producto eliminado correctamente.", false);
+                if (deleted) {
+                    showMessage("Producto eliminado correctamente.", false);
                     txtId.clear();
                 } else {
-                    mostrarMensaje("No se encontró un producto con ese ID.", true);
+                    showMessage("No se encontró un producto con ese ID.", true);
                 }
             } catch (NumberFormatException ex) {
-                mostrarMensaje("El ID debe ser un número entero.", true);
+                showMessage("El ID debe ser un número entero.", true);
             }
         });
 
         return new VBox(12, txtId, btn);
     }
 
-    private VBox formFind() {
-        TextField txtId = campoTexto("ID del producto a buscar");
+    // --- BUSCAR ---
 
-        Button btn = botonPrincipal("Buscar");
+    private VBox formBuscar() {
+        TextField txtId = field("ID del producto a buscar");
+
+        Button btn = primaryButton("Buscar");
         btn.setOnAction(e -> {
             try {
-                int id = Integer.parseInt(txtId.getText());
+                int id = Integer.parseInt(txtId.getText().trim());
+                Optional<Product> result = context.getFindProductUseCase().execute(id);
 
-                FindProduct findProduct = context.getFindProductUseCase();
-                Optional<Product> resultado = findProduct.execute(id);
-
-                if (resultado.isPresent()) {
-                    Product p = resultado.get();
-                    mostrarMensaje("Encontrado: " + p.getName() + " (stock: " + p.getStock() + ")", false);
+                if (result.isPresent()) {
+                    Product p = result.get();
+                    showMessage(
+                            "Nombre: " + p.getName() +
+                                    " | Precio: $" + String.format("%.2f", p.getPrice()) +
+                                    " | Stock: " + p.getStock(),
+                            false
+                    );
                 } else {
-                    mostrarMensaje("No se encontró un producto con ese ID.", true);
+                    showMessage("No se encontró un producto con ese ID.", true);
                 }
             } catch (NumberFormatException ex) {
-                mostrarMensaje("El ID debe ser un número entero.", true);
+                showMessage("El ID debe ser un número entero.", true);
             }
         });
 
         return new VBox(12, txtId, btn);
     }
+    private VBox formBuscarNombre() {
+        TextField txtName = field("Nombre del producto a buscar");
+        Button btn = primaryButton("Buscar por nombre");
 
-    // ---------- Helpers de UI ----------
+        btn.setOnAction(e -> {
+            String name = txtName.getText().trim();
+            // Usamos el caso de uso que ya tenés inyectado en el AppContext
+            var result = context.getFindByNameUseCase().execute(name);
 
-    private TextField campoTexto(String prompt) {
-        TextField campo = new TextField();
-        campo.setPromptText(prompt);
-        campo.getStyleClass().add("field");
-        return campo;
+            if (!result.isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                result.forEach(p -> sb.append("ID: ").append(p.getId())
+                        .append(" | ").append(p.getName())
+                        .append(" | Stock: ").append(p.getStock())
+                        .append("\n"));
+                showMessage(sb.toString().trim(), false);
+            } else {
+                showMessage("No se encontraron productos con ese nombre.", true);
+            }
+        });
+
+        return new VBox(12, txtName, btn);
     }
 
-    private Button botonPrincipal(String texto) {
-        Button btn = new Button(texto);
+    // --- Helpers ---
+
+    private TextField field(String prompt) {
+        TextField f = new TextField();
+        f.setPromptText(prompt);
+        f.getStyleClass().add("field");
+        return f;
+    }
+
+    private Button primaryButton(String text) {
+        Button btn = new Button(text);
         btn.getStyleClass().add("btn-primary");
         btn.setMaxWidth(Double.MAX_VALUE);
         return btn;
     }
 
-    private void mostrarMensaje(String texto, boolean esError) {
-        lblMensaje.setText(texto);
-        lblMensaje.setVisible(true);
-        lblMensaje.setManaged(true);
-        lblMensaje.getStyleClass().removeAll("error-label", "success-label");
-        lblMensaje.getStyleClass().add(esError ? "error-label" : "success-label");
+    private void showMessage(String text, boolean isError) {
+        lblMessage.setText(text);
+        lblMessage.setVisible(true);
+        lblMessage.setManaged(true);
+        lblMessage.getStyleClass().removeAll("error-label", "success-label");
+        lblMessage.getStyleClass().add(isError ? "error-label" : "success-label");
     }
 
-    private String tituloSegunModo() {
+    private String titleForMode() {
         switch (modo) {
-            case ALTA: return "Dar de alta";
+            case ALTA:      return "Dar de alta";
             case MODIFICAR: return "Modificar producto";
-            case BAJA: return "Dar de baja";
-            case BUSCAR: return "Buscar producto";
-            default: return "Productos";
+            case BAJA:      return "Dar de baja";
+            case BUSCAR:    return "Buscar producto";
+            default:        return "Productos";
+            case BUSCAR_NOMBRE: return "Buscar por nombre";
         }
     }
 
-    private String subtituloSegunModo() {
+    private String subtitleForMode() {
         switch (modo) {
-            case ALTA: return "Completá los datos del nuevo producto";
+            case ALTA:      return "Completá los datos del nuevo producto";
             case MODIFICAR: return "Ingresá el ID y los nuevos valores";
-            case BAJA: return "Ingresá el ID del producto a eliminar";
-            case BUSCAR: return "Ingresá el ID del producto a consultar";
-            default: return "";
+            case BAJA:      return "Ingresá el ID del producto a eliminar";
+            case BUSCAR:    return "Ingresá el ID del producto a consultar";
+            default:        return "";
+            case BUSCAR_NOMBRE: return "Ingresá el nombre o parte de él";
         }
     }
 }

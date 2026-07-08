@@ -4,48 +4,36 @@ public class Product {
 
   private int id;
   private String name;
+  private double price;
   private int stock;
 
-  // El constructor lo hacemos privado para obligar a usar el Builder
   private Product(Builder builder) {
-    this.id = builder.id;
-    this.name = builder.name;
+    this.id    = builder.id;
+    this.name  = builder.name;
+    this.price = builder.price;
     this.stock = builder.stock;
   }
 
-  // Getters
-  public int getId() { return id; }
-  public String getName() { return name; }
-  public int getStock() { return stock; }
+  public int getId()       { return id; }
+  public String getName()  { return name; }
+  public double getPrice() { return price; }
+  public int getStock()    { return stock; }
 
-  // Setters (En DDD a veces se quitan para hacer el modelo inmutable, pero los dejamos si los necesitas)
-  public void setId(int id) { this.id = id; }
-  public void setName(String name) { this.name = name; }
-  public void setStock(int stock) { this.stock = stock; }
+  public void setName(String name)   { this.name = name; }
+  public void setPrice(double price) { this.price = price; }
+  public void setStock(int stock)    { this.stock = stock; }
 
-  // --- AQUÍ EMPIEZA EL PATRÓN BUILDER ---
   public static class Builder {
     private int id;
     private String name;
+    private double price;
     private int stock;
 
-    public Builder id(int id) {
-      this.id = id;
-      return this;
-    }
+    public Builder id(int id)          { this.id = id;       return this; }
+    public Builder name(String name)   { this.name = name;   return this; }
+    public Builder price(double price) { this.price = price; return this; }
+    public Builder stock(int stock)    { this.stock = stock; return this; }
 
-    public Builder name(String name) {
-      this.name = name;
-      return this;
-    }
-
-    public Builder stock(int stock) {
-      this.stock = stock;
-      return this;
-    }
-
-    public Product build() {
-      return new Product(this);
-    }
+    public Product build() { return new Product(this); }
   }
 }

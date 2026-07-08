@@ -34,13 +34,15 @@ public class BsConfig {
      * Se ejecuta una sola vez al arrancar la app.
      */
     private static void initDB() {
-        String crearProductos = """
+        String createProducts = """
                 CREATE TABLE IF NOT EXISTS products (
                     id    INTEGER PRIMARY KEY AUTOINCREMENT,
                     name  TEXT    NOT NULL,
+                    price REAL    NOT NULL DEFAULT 0.0,
                     stock INTEGER NOT NULL DEFAULT 0
                 )
                 """;
+
 
         String createUsers = """
                 CREATE TABLE IF NOT EXISTS users (
@@ -52,7 +54,7 @@ public class BsConfig {
 
         try (Connection conn = DriverManager.getConnection(URL);
              Statement stmt = conn.createStatement()) {
-            stmt.execute(crearProductos);
+            stmt.execute(createProducts);
             stmt.execute(createUsers);
         } catch (SQLException e) {
             throw new RuntimeException("Error al inicializar la base de datos", e);

@@ -17,7 +17,7 @@ import org.phora.infrastructure.AppContext;
 public class ProductMenuView {
 
     public static final double WIDTH  = 580;
-    public static final double HEIGHT = 560;
+    public static final double HEIGHT = 660;
 
     private final AppContext context;
     private final SceneManager sceneManager;
@@ -51,7 +51,7 @@ public class ProductMenuView {
         grid.setVgap(18);
         grid.setPadding(new Insets(4, 4, 4, 4));
 
-        grid.add(buildCard("➕", "Dar de alta",  "Agregar un producto nuevo",
+        grid.add(buildCard("☑\uFE0F", "Dar de alta",  "Agregar un producto nuevo",
                 () -> sceneManager.showProductForm(ProductFormView.Modo.ALTA)), 0, 0);
         grid.add(buildCard("✏️", "Modificar",    "Editar un producto existente",
                 () -> sceneManager.showProductForm(ProductFormView.Modo.MODIFICAR)), 1, 0);
@@ -61,6 +61,8 @@ public class ProductMenuView {
                 () -> sceneManager.showProductForm(ProductFormView.Modo.BUSCAR)), 1, 1);
         grid.add(buildCard("📋", "Ver listado",   "Ver todos los productos",
                 sceneManager::showProductList), 0, 2);
+        grid.add(buildCard("🔍", "Buscar por Nombre", "Consultar stock por nombre",
+                () -> sceneManager.showProductForm(ProductFormView.Modo.BUSCAR_NOMBRE)), 1, 2);
 
         // ScrollPane para que la 5ta tarjeta sea accesible sin agrandar la ventana
         ScrollPane scroll = new ScrollPane(grid);

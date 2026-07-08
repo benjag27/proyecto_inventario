@@ -3,10 +3,11 @@ package org.phora.infrastructure.persistence;
 import org.phora.domain.model.Product;
 import org.phora.domain.repository.ProductRepository;
 
-import org.phora.domain.model.Product;
-import org.phora.domain.repository.ProductRepository;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,11 +20,12 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public void add(Product p) {
-        String sql = "INSERT INTO products (name, stock) VALUES (?, ?)";
+        String sql = "INSERT INTO products (name, price, stock) VALUES (?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, p.getName());
-            stmt.setInt(2, p.getStock());
+            stmt.setDouble(2, p.getPrice());
+            stmt.setInt(3, p.getStock());
             stmt.executeUpdate();
             System.out.println("Product '" + p.getName() + "' added successfully.");
         } catch (SQLException e) {
@@ -33,12 +35,13 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public void update(Product p) {
-        String sql = "UPDATE products SET name = ?, stock = ? WHERE id = ?";
+        String sql = "UPDATE products SET name = ?, price = ?, stock = ? WHERE id = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, p.getName());
-            stmt.setInt(2, p.getStock());
-            stmt.setInt(3, p.getId());
+            stmt.setDouble(2, p.getPrice());
+            stmt.setInt(3, p.getStock());
+            stmt.setInt(4, p.getId());
             stmt.executeUpdate();
             System.out.println("Product with ID " + p.getId() + " updated successfully.");
         } catch (SQLException e) {
@@ -66,20 +69,14 @@ public class ProductRepositoryImpl implements ProductRepository {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    Product product = new Product.Builder()
-                            .id(rs.getInt("id"))
-                            .name(rs.getString("name"))
-                            .stock(rs.getInt("stock"))
-                            .build();
-                    return Optional.of(product);
-                }
+                if (rs.next()) return Optional.of(buildProduct(rs));
             }
         } catch (SQLException e) {
             System.err.println("Error finding product by ID: " + e.getMessage());
         }
         return Optional.empty();
     }
+
     @Override
     public List<Product> findAll() {
         String sql = "SELECT * FROM products ORDER BY id";
@@ -87,11 +84,25 @@ public class ProductRepositoryImpl implements ProductRepository {
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                products.add(buildProduct(rs));
-            }
+            while (rs.next()) products.add(buildProduct(rs));
         } catch (SQLException e) {
             System.err.println("Error listing products: " + e.getMessage());
+        }
+        return products;
+    }
+
+    @Override
+    public List<Product> findByName(String name) {
+        String sql = "SELECT * FROM products WHERE LOWER(name) LIKE LOWER(?) ORDER BY name";
+        List<Product> products = new ArrayList<>();
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + name + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) products.add(buildProduct(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error finding products by name: " + e.getMessage());
         }
         return products;
     }
@@ -100,6 +111,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         return new Product.Builder()
                 .id(rs.getInt("id"))
                 .name(rs.getString("name"))
+                .price(rs.getDouble("price"))
                 .stock(rs.getInt("stock"))
                 .build();
     }

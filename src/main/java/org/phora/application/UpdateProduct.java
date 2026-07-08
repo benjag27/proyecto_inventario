@@ -13,24 +13,16 @@ public class UpdateProduct {
         this.productRepository = productRepository;
     }
 
-    /**
-     * Busca el producto por id, le aplica los nuevos valores y persiste
-     * el cambio. Devuelve true si se encontró y actualizó, false si el
-     * id no existía — así la UI sabe qué mensaje mostrar sin tener que
-     * adivinar mirando un Optional vacío que no le llega.
-     */
-    public boolean execute(String name, int stock, int id) {
-        Optional<Product> p = this.productRepository.findById(id);
+    public boolean execute(String name, double price, int stock, int id) {
+        Optional<Product> p = productRepository.findById(id);
+        if (p.isEmpty()) return false;
 
-        if (p.isEmpty()) {
-            return false;
-        }
+        Product product = p.get();
+        product.setName(name);
+        product.setPrice(price);
+        product.setStock(stock);
 
-        Product producto = p.get();
-        producto.setName(name);
-        producto.setStock(stock);
-
-        this.productRepository.update(producto);
+        productRepository.update(product);
         return true;
     }
 }

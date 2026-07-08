@@ -5,29 +5,24 @@ import org.phora.domain.repository.ProductRepository;
 
 public class AddProduct {
 
-    // 1. Declaramos la INTERFAZ (No la implementación)
     private final ProductRepository productRepository;
 
-    // 2. El constructor recibe CUALQUIER cosa que implemente esa interfaz
     public AddProduct(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
-    // 3. El método para ejecutar el caso de uso
-    public void execute(String name, int stock) {
-
-        // Podrías meter validaciones de negocio aquí si quisieras:
+    public void execute(String name, double price, int stock) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre del producto no puede estar vacío");
         }
-
-        // Creamos el objeto usando el Builder
-        Product nuevoProducto = new Product.Builder()
-                .name(name)
+        if (price < 0) {
+            throw new IllegalArgumentException("El precio no puede ser negativo");
+        }
+        Product product = new Product.Builder()
+                .name(name.trim())
+                .price(price)
                 .stock(stock)
                 .build();
-
-        // Guardamos usando el repositorio
-        this.productRepository.add(nuevoProducto);
+        productRepository.add(product);
     }
 }

@@ -15,9 +15,11 @@ public class AppContext {
     private final UpdateProduct updateProductUseCase;
     private final DeleteProduct deleteProductUseCase;
     private final FindProduct findProductUseCase;
+    private final FindByName findByNameUseCase;
     private final ListProducts  listProductsUseCase;
     private final UserRepository userRepository;
     private final LoginService loginServiceUseCase;
+
 
     public AppContext() {
         // 1. Persistencia (infraestructura)
@@ -28,7 +30,9 @@ public class AppContext {
         this.updateProductUseCase = new UpdateProduct(this.productRepository);
         this.deleteProductUseCase = new DeleteProduct(this.productRepository);
         this.findProductUseCase = new FindProduct(this.productRepository);
+        this.findByNameUseCase = new FindByName(this.productRepository);
         this.listProductsUseCase = new ListProducts(this.productRepository);
+
 
         // 3. Login
         this.userRepository = new UserRepositoryImpl();
@@ -51,9 +55,13 @@ public class AppContext {
         return this.findProductUseCase;
     }
 
+    public FindByName getFindByNameUseCase() {return  this.findByNameUseCase;}
+
     public LoginService getLoginServiceUseCase() {
         return this.loginServiceUseCase;
     }
 
     public ListProducts getListProductsUseCase()   { return listProductsUseCase; }
+
+
 }
