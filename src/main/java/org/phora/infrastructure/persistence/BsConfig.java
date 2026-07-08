@@ -13,11 +13,16 @@ import java.sql.Statement;
 public class BsConfig {
 
     // Ruta relativa: el .db queda junto al ejecutable
-    private static final String URL = "jdbc:sqlite:inventario.db";
+    private static final String URL;
 
     static {
-        // Al cargar la clase, nos aseguramos de que las tablas existan.
-        // Si el archivo no existe, SQLite lo crea solo.
+        String userHome = System.getProperty("user.home");
+        String appDir = userHome + java.io.File.separator + ".phora_inventario";
+        java.io.File dir = new java.io.File(appDir);
+        if (!dir.exists()) {
+            dir.mkdirs(); // Si no existe la carpeta, la creamos
+        }
+        URL = "jdbc:sqlite:" + appDir + java.io.File.separator + "inventario.db";
         initDB();
     }
 

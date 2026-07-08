@@ -12,6 +12,8 @@ public class Main extends Application {
     private AppContext context;
 
     public static void main(String[] args) {
+
+
         launch(args);
     }
 
@@ -22,6 +24,9 @@ public class Main extends Application {
 
 
         this.context = new AppContext();
+
+        // ======================
+
 
         // 2. Pasamos esa única instancia al SceneManager
         SceneManager sceneManager = new SceneManager(primaryStage, context);

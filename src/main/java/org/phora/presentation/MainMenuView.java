@@ -23,8 +23,8 @@ public class MainMenuView {
 
     private final AppContext context;
     private final SceneManager sceneManager;
-    public static final double WIDTH = 1900;
-    public static final double HEIGHT = 1900;
+    public static final double WIDTH = 980;
+    public static final double HEIGHT = 680;
 
     public MainMenuView(AppContext context, SceneManager sceneManager) {
         this.context = context;
@@ -53,17 +53,17 @@ public class MainMenuView {
         GridPane grilla = new GridPane();
         grilla.setHgap(18);
         grilla.setVgap(18);
-        grilla.setAlignment(Pos.CENTER);
-        VBox.setVgrow(grilla, javafx.scene.layout.Priority.ALWAYS);
+        grilla.setAlignment(Pos.TOP_LEFT);
+        //VBox.setVgrow(grilla, javafx.scene.layout.Priority.ALWAYS);
 
         grilla.add(createCard("📦", "Productos", "Alta, baja y stock", this::openProducts), 0, 0);
         grilla.add(createCard("🏷️", "Categorías", "Organizá tus rubros", this::proximamente), 1, 0);
         grilla.add(createCard("🔄", "Movimientos", "Entradas y salidas", this::proximamente), 0, 1);
         grilla.add(createCard("👤", "Usuarios", "Accesos del equipo", this::proximamente), 1, 1);
 
-        VBox contenido = new VBox(top, grilla);
+        VBox contenido = new VBox(20, top, grilla); // Añadimos 20px de espacio interno constante entre el top y la grilla
         contenido.setPadding(new Insets(40));
-        contenido.setAlignment(Pos.CENTER);
+        contenido.setAlignment(Pos.TOP_LEFT); // C
 
         BorderPane root = new BorderPane(contenido);
         root.getStyleClass().add("root");
