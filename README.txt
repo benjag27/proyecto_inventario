@@ -40,3 +40,12 @@ Para replicar el entorno de desarrollo, compilar el código fuente o generar nue
 git clone https://github.com/benjag27/proyecto_inventario.git
 cd proyecto_inventario-main
 mvn clean javafx:jlink
+
+## Credenciales de Acceso (Pruebas)
+
+Para ingresar al sistema en el entorno de desarrollo o tras la primera instalación, utilizar los siguientes datos de acceso por defecto:
+
+* **Usuario:** `admin`
+* **Contraseña:** `admin123`
+
+> ⚠️ **Nota:** Estas credenciales están cargadas inicialmente en la base de datos local SQLite para facilitar las pruebas del panel.
