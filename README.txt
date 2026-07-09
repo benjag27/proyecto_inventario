@@ -1,51 +1,95 @@
-# Sistema de Gestión de Inventario - Phora
+# Phora — Inventory Management System
 
-Aplicación de escritorio para la gestión de productos, desarrollada en JavaFX con soporte de base de datos local mediante SQLite.
-
----
-
-## Descargas e Instalación
-
-Los instaladores empaquetan su propio entorno de ejecución, por lo que **no es necesario tener Java instalado en el sistema** para correr la aplicación.
-
-Las versiones estables se encuentran disponibles en la sección de **Releases** de este repositorio:
-
-* **Windows:** Descargar el archivo `.msi` y ejecutar el asistente de instalación.
-* **Linux (Ubuntu/Debian):** Descargar el archivo `.deb` e instalarlo desde la terminal con:
-    ```bash
-    sudo apt install ./inventariophora_1.0.0-1_amd64.deb
-    ```
+> A lightweight desktop application built with JavaFX and SQLite for local, zero-configuration warehouse and product tracking.
 
 ---
 
-## Tecnologías
+## Downloads & Installation
 
-* Java 17
-* JavaFX (Interfaz Gráfica)
-* SQLite (Base de Datos Local)
-* Maven (Gestión de dependencias)
+The installers package their own standalone runtime — **you do not need Java installed on your system** to run the application.
+
+Download the latest stable binaries from the **[Releases](https://github.com/benjag27/proyecto_inventario/releases)** section:
+
+| Platform | Installer |
+|---|---|
+| **Windows** | Download the `.msi` file and follow the installation wizard |
+| **Linux (Debian/Ubuntu)** | Download the `.deb` package and run: `sudo apt install ./inventariophora_1.0.0-1_amd64.deb` |
 
 ---
 
-## Compilación y Construcción (Desarrollo)
+## Tech Stack
 
-Para replicar el entorno de desarrollo, compilar el código fuente o generar nuevos instaladores nativos, seguir los pasos a continuación.
+| Layer | Technology |
+|---|---|
+| Language | Java 17 |
+| GUI Framework | JavaFX 21 |
+| Database | SQLite (Embedded) |
+| Build System | Apache Maven |
 
-### Prerrequisitos
-* Java Development Kit (JDK) 17
-* Apache Maven
+---
 
-### 1. Clonar el repositorio y compilar
+## Development Setup
+
+### Prerequisites
+
+- Java Development Kit (JDK) 17
+- Apache Maven 3.x or higher
+
+### 1. Clone and compile
+
 ```bash
 git clone https://github.com/benjag27/proyecto_inventario.git
-cd proyecto_inventario-main
-mvn clean javafx:jlink
+cd proyecto_inventario
+mvn clean install
+```
 
-## Credenciales de Acceso (Pruebas)
+### 2. Run in development mode
 
-Para ingresar al sistema en el entorno de desarrollo o tras la primera instalación, utilizar los siguientes datos de acceso por defecto:
+```bash
+mvn javafx:run
+```
 
-* **Usuario:** `admin`
-* **Contraseña:** `admin123`
+### 3. Generate runtime image
 
-> ⚠️ **Nota:** Estas credenciales están cargadas inicialmente en la base de datos local SQLite para facilitar las pruebas del panel.
+Builds a stripped-down, platform-specific custom runtime using `jlink`:
+
+```bash
+mvn javafx:jlink
+```
+
+The output is placed in `target/inventario-app/`. Run it with:
+
+```bash
+# Linux / Mac
+./target/inventario-app/bin/inventario
+
+# Windows
+target\inventario-app\bin\inventario.bat
+```
+
+---
+
+## Default Access Credentials
+
+Use the following credentials to log in after a clean setup or first install:
+
+| Field | Value |
+|---|---|
+| Username | `admin` |
+| Password | `admin123` |
+
+> ⚠️ These credentials are automatically provisioned into your local database on the very first launch.
+
+---
+
+## Release History
+
+### v1.0.0-beta — First Beta Release
+
+A lightweight, cross-platform desktop application designed for efficient warehouse and inventory management.
+
+- **Secure Authentication** — Multi-user system with PBKDF2WithHmacSHA256 password hashing
+- **Product Management** — Full CRUD operations for managing products, pricing, and live stock levels
+- **Real-time Search** — Partial name search that filters results as you type
+- **Persistent SQLite Storage** — Auto-managed embedded database with zero-configuration deployment on Windows and Linux
+- **Modern GUI** — Clean, dark-themed layout built with JavaFX
