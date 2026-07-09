@@ -10,10 +10,12 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 public class LoginService {
 
   private final UserRepository userRepository;
+  private static final Logger logger = Logger.getLogger(LoginService.class.getName());
 
   // Parámetros de seguridad estándar (NIST)
   private static final int ITERATIONS = 65536;
@@ -25,9 +27,9 @@ public class LoginService {
   }
 
   public boolean authenticate(String username, String rawPassword) {
-    System.out.println("=== INTENTO DE LOGIN DETECTADO ===");
-    System.out.println("Usuario recibido desde pantalla: '" + username + "'");
-    System.out.println("Contraseña recibida desde pantalla: '" + rawPassword + "'");
+    logger.info("=== INTENTO DE LOGIN DETECTADO ===");
+    logger.info("Usuario recibido desde pantalla: '" + username + "'");
+    logger.info("Contraseña recibida desde pantalla: '" + rawPassword + "'");
     // ============================
 
     Optional<User> userOptional = userRepository.findByUsername(username);

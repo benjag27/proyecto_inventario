@@ -37,10 +37,8 @@ public class BsConfig {
             dir.mkdirs();
         }
 
-        // Asignamos la constante final de forma definitiva
-        URL = "jdbc:sqlite:" + appDir + java.io.File.separator + "inventario.db";
 
-        // Inicializamos las tablas
+        URL = "jdbc:sqlite:" + appDir + java.io.File.separator + "inventario.db";
         initDB();
     }
 
@@ -75,10 +73,21 @@ public class BsConfig {
                 )
                 """;
 
+        String createAuditLogs = """
+            CREATE TABLE IF NOT EXISTS audit_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL,
+                action_type TEXT NOT NULL,
+                description TEXT NOT NULL,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+            """;
+
         try (Connection conn = DriverManager.getConnection(URL);
                 Statement stmt = conn.createStatement()) {
             stmt.execute(createProducts);
             stmt.execute(createUsers);
+            stmt.execute(createAuditLogs);
         } catch (SQLException e) {
             throw new RuntimeException("Error al inicializar la base de datos", e);
         }

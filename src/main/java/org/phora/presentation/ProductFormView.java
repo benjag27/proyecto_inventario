@@ -76,9 +76,9 @@ public class ProductFormView {
             case ALTA:     return formAlta();
             case MODIFICAR: return formModificar();
             case BAJA:     return formBaja();
-            case BUSCAR:
-            default:       return formBuscar();
-            case BUSCAR_NOMBRE: return formBuscarNombre();
+            case BUSCAR: return formBuscar();
+            case  BUSCAR_NOMBRE: return formBuscarNombre();
+            default: return formBuscar();
         }
     }
 
@@ -96,7 +96,7 @@ public class ProductFormView {
                 double price = Double.parseDouble(txtPrice.getText().replace(",", "."));
                 int stock    = Integer.parseInt(txtStock.getText().trim());
 
-                context.getAddProductUseCase().execute(name, price, stock);
+                context.getAddProductUseCase().execute(name, price, stock,"admin");
 
                 showMessage("Producto agregado correctamente.", false);
                 txtName.clear();
@@ -128,7 +128,7 @@ public class ProductFormView {
                 double price = Double.parseDouble(txtPrice.getText().replace(",", "."));
                 int stock    = Integer.parseInt(txtStock.getText().trim());
 
-                boolean updated = context.getUpdateProductUseCase().execute(name, price, stock, id);
+                boolean updated = context.getUpdateProductUseCase().execute(name, price, stock, id,"admin");
 
                 if (updated) {
                     showMessage("Producto actualizado correctamente.", false);
@@ -152,7 +152,7 @@ public class ProductFormView {
         btn.setOnAction(e -> {
             try {
                 int id = Integer.parseInt(txtId.getText().trim());
-                boolean deleted = context.getDeleteProductUseCase().execute(id);
+                boolean deleted = context.getDeleteProductUseCase().execute(id,"admin");
 
                 if (deleted) {
                     showMessage("Producto eliminado correctamente.", false);
@@ -251,8 +251,9 @@ public class ProductFormView {
             case MODIFICAR: return "Modificar producto";
             case BAJA:      return "Dar de baja";
             case BUSCAR:    return "Buscar producto";
-            default:        return "Productos";
+
             case BUSCAR_NOMBRE: return "Buscar por nombre";
+            default:        return "Productos";
         }
     }
 
@@ -262,8 +263,9 @@ public class ProductFormView {
             case MODIFICAR: return "Ingresá el ID y los nuevos valores";
             case BAJA:      return "Ingresá el ID del producto a eliminar";
             case BUSCAR:    return "Ingresá el ID del producto a consultar";
-            default:        return "";
+
             case BUSCAR_NOMBRE: return "Ingresá el nombre o parte de él";
+            default:        return "";
         }
     }
 }

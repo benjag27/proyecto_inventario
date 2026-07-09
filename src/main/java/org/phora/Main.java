@@ -18,7 +18,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // 1. Inicializamos el contexto UNA SOLA VEZ aquí
+
 
         this.context = new AppContext();
 
