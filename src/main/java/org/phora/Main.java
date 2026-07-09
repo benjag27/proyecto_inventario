@@ -13,22 +13,15 @@ public class Main extends Application {
 
     public static void main(String[] args) {
 
-
         launch(args);
     }
-
 
     @Override
     public void start(Stage primaryStage) {
         // 1. Inicializamos el contexto UNA SOLA VEZ aquí
 
-
         this.context = new AppContext();
 
-        // ======================
-
-
-        // 2. Pasamos esa única instancia al SceneManager
         SceneManager sceneManager = new SceneManager(primaryStage, context);
 
         // 3. Arrancamos el flujo
