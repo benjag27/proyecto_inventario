@@ -37,10 +37,8 @@ public class BsConfig {
             dir.mkdirs();
         }
 
-        // Asignamos la constante final de forma definitiva
-        URL = "jdbc:sqlite:" + appDir + java.io.File.separator + "inventario.db";
 
-        // Inicializamos las tablas
+        URL = "jdbc:sqlite:" + appDir + java.io.File.separator + "inventario.db";
         initDB();
     }
 
