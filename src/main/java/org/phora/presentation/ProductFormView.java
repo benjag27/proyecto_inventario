@@ -96,7 +96,7 @@ public class ProductFormView {
                 double price = Double.parseDouble(txtPrice.getText().replace(",", "."));
                 int stock    = Integer.parseInt(txtStock.getText().trim());
 
-                context.getAddProductUseCase().execute(name, price, stock);
+                context.getAddProductUseCase().execute(name, price, stock,"admin");
 
                 showMessage("Producto agregado correctamente.", false);
                 txtName.clear();
@@ -128,7 +128,7 @@ public class ProductFormView {
                 double price = Double.parseDouble(txtPrice.getText().replace(",", "."));
                 int stock    = Integer.parseInt(txtStock.getText().trim());
 
-                boolean updated = context.getUpdateProductUseCase().execute(name, price, stock, id);
+                boolean updated = context.getUpdateProductUseCase().execute(name, price, stock, id,"admin");
 
                 if (updated) {
                     showMessage("Producto actualizado correctamente.", false);
@@ -152,7 +152,7 @@ public class ProductFormView {
         btn.setOnAction(e -> {
             try {
                 int id = Integer.parseInt(txtId.getText().trim());
-                boolean deleted = context.getDeleteProductUseCase().execute(id);
+                boolean deleted = context.getDeleteProductUseCase().execute(id,"admin");
 
                 if (deleted) {
                     showMessage("Producto eliminado correctamente.", false);

@@ -1,9 +1,12 @@
 package org.phora.infrastructure;
 
 import org.phora.application.*;
+import org.phora.domain.repository.AuditLogRepository;
 import org.phora.domain.repository.ProductRepository;
 import org.phora.domain.repository.UserRepository;
+import org.phora.domain.service.AuditLogService;
 import org.phora.domain.service.LoginService;
+import org.phora.infrastructure.persistence.AuditLogRepositoryImpl;
 import org.phora.infrastructure.persistence.ProductRepositoryImpl;
 import org.phora.infrastructure.persistence.UserRepositoryImpl;
 
@@ -20,23 +23,30 @@ public class AppContext {
     private final UserRepository userRepository;
     private final LoginService loginServiceUseCase;
 
+    private final AuditLogRepository auditLogRepository;
+    private final AuditLogService auditLogService;
+
 
     public AppContext() {
         // 1. Persistencia (infraestructura)
         this.productRepository = new ProductRepositoryImpl();
+        this.auditLogRepository = new AuditLogRepositoryImpl();
+
+        this.auditLogService = new AuditLogService(this.auditLogRepository);
 
         // 2. Casos de uso de productos (aplicación)
-        this.addProductUseCase = new AddProduct(this.productRepository);
-        this.updateProductUseCase = new UpdateProduct(this.productRepository);
-        this.deleteProductUseCase = new DeleteProduct(this.productRepository);
+        this.addProductUseCase = new AddProduct(this.productRepository, this.auditLogService);
+        this.updateProductUseCase = new UpdateProduct(this.productRepository,this.auditLogService);
+        this.deleteProductUseCase = new DeleteProduct(this.productRepository,this.auditLogService);
         this.findProductUseCase = new FindProduct(this.productRepository);
         this.findByNameUseCase = new FindByName(this.productRepository);
         this.listProductsUseCase = new ListProducts(this.productRepository);
 
 
-        // 3. Login
+
         this.userRepository = new UserRepositoryImpl();
         this.loginServiceUseCase = new LoginService(userRepository);
+
     }
 
     public AddProduct getAddProductUseCase() {
@@ -62,6 +72,8 @@ public class AppContext {
     }
 
     public ListProducts getListProductsUseCase()   { return listProductsUseCase; }
-
+    public AuditLogService getAuditLogService() {
+        return this.auditLogService;
+    }
 
 }

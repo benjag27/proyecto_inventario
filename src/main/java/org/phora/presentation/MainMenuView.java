@@ -60,6 +60,7 @@ public class MainMenuView {
         grilla.add(createCard("🏷️", "Categorías", "Organizá tus rubros", this::proximamente), 1, 0);
         grilla.add(createCard("🔄", "Movimientos", "Entradas y salidas", this::proximamente), 0, 1);
         grilla.add(createCard("👤", "Usuarios", "Accesos del equipo", this::proximamente), 1, 1);
+        grilla.add(createCard("🔄", "Movimientos", "Entradas y salidas", this::openAuditLog), 0, 1);
 
         VBox contenido = new VBox(20, top, grilla); // Añadimos 20px de espacio interno constante entre el top y la grilla
         contenido.setPadding(new Insets(40));
@@ -93,6 +94,10 @@ public class MainMenuView {
 
     private void openProducts() {
         sceneManager.showProductMenu();
+    }
+
+    private void openAuditLog() {
+        sceneManager.showAuditLogMenu();
     }
 
     private void proximamente() {

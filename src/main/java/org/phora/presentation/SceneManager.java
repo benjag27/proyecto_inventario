@@ -56,6 +56,14 @@ public class SceneManager {
         stage.centerOnScreen();
     }
 
+    public void showAuditLogMenu() {
+        AuditLogView auditLogView = new AuditLogView(context, this);
+        freeSize();
+        show(auditLogView.createScene(), "Inventario — Historial de Movimientos");
+        lockSize(MainMenuView.WIDTH, MainMenuView.HEIGHT);
+        stage.centerOnScreen();
+    }
+
     private void show(Scene scene, String titulo) {
         stage.setTitle(titulo);
         stage.setScene(scene);
@@ -81,4 +89,6 @@ public class SceneManager {
         stage.setMaxWidth(Double.MAX_VALUE);
         stage.setMaxHeight(Double.MAX_VALUE);
     }
+
+
 }
