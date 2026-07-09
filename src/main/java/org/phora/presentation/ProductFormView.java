@@ -76,9 +76,9 @@ public class ProductFormView {
             case ALTA:     return formAlta();
             case MODIFICAR: return formModificar();
             case BAJA:     return formBaja();
-            case BUSCAR:
-            default:       return formBuscar();
-            case BUSCAR_NOMBRE: return formBuscarNombre();
+            case BUSCAR: return formBuscar();
+            case  BUSCAR_NOMBRE: return formBuscarNombre();
+            default: return formBuscar();
         }
     }
 
@@ -251,8 +251,9 @@ public class ProductFormView {
             case MODIFICAR: return "Modificar producto";
             case BAJA:      return "Dar de baja";
             case BUSCAR:    return "Buscar producto";
-            default:        return "Productos";
+
             case BUSCAR_NOMBRE: return "Buscar por nombre";
+            default:        return "Productos";
         }
     }
 
@@ -262,8 +263,9 @@ public class ProductFormView {
             case MODIFICAR: return "Ingresá el ID y los nuevos valores";
             case BAJA:      return "Ingresá el ID del producto a eliminar";
             case BUSCAR:    return "Ingresá el ID del producto a consultar";
-            default:        return "";
+
             case BUSCAR_NOMBRE: return "Ingresá el nombre o parte de él";
+            default:        return "";
         }
     }
 }

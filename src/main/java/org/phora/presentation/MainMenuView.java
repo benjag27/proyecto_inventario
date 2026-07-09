@@ -54,7 +54,7 @@ public class MainMenuView {
         grilla.setHgap(18);
         grilla.setVgap(18);
         grilla.setAlignment(Pos.TOP_LEFT);
-        //VBox.setVgrow(grilla, javafx.scene.layout.Priority.ALWAYS);
+
 
         grilla.add(createCard("📦", "Productos", "Alta, baja y stock", this::openProducts), 0, 0);
         grilla.add(createCard("🏷️", "Categorías", "Organizá tus rubros", this::proximamente), 1, 0);
