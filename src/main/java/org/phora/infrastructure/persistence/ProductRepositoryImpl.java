@@ -2,6 +2,7 @@ package org.phora.infrastructure.persistence;
 
 import org.phora.domain.model.Product;
 import org.phora.domain.repository.ProductRepository;
+import org.phora.domain.service.LoginService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,9 +12,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
+
 
 public class ProductRepositoryImpl implements ProductRepository {
-
+    private static final Logger logger = Logger.getLogger(LoginService.class.getName());
     private Connection getConnection() throws SQLException {
         return BsConfig.getConnection();
     }
@@ -43,9 +46,9 @@ public class ProductRepositoryImpl implements ProductRepository {
             stmt.setInt(3, p.getStock());
             stmt.setInt(4, p.getId());
             stmt.executeUpdate();
-            System.out.println("Product with ID " + p.getId() + " updated successfully.");
+            logger.info("Product with ID " + p.getId() + " updated successfully.");
         } catch (SQLException e) {
-            System.err.println("Error updating product: " + e.getMessage());
+            logger.info("Error updating product: " + e.getMessage());
         }
     }
 
@@ -56,9 +59,9 @@ public class ProductRepositoryImpl implements ProductRepository {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, p.getId());
             stmt.executeUpdate();
-            System.out.println("Product with ID " + p.getId() + " deleted successfully.");
+            logger.info("Product with ID " + p.getId() + " deleted successfully.");
         } catch (SQLException e) {
-            System.err.println("Error deleting product: " + e.getMessage());
+            logger.info("Error deleting product: " + e.getMessage());
         }
     }
 
@@ -72,7 +75,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 if (rs.next()) return Optional.of(buildProduct(rs));
             }
         } catch (SQLException e) {
-            System.err.println("Error finding product by ID: " + e.getMessage());
+            logger.info("Error finding product by ID: " + e.getMessage());
         }
         return Optional.empty();
     }
@@ -86,7 +89,7 @@ public class ProductRepositoryImpl implements ProductRepository {
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) products.add(buildProduct(rs));
         } catch (SQLException e) {
-            System.err.println("Error listing products: " + e.getMessage());
+            logger.info("Error listing products: " + e.getMessage());
         }
         return products;
     }
@@ -102,7 +105,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 while (rs.next()) products.add(buildProduct(rs));
             }
         } catch (SQLException e) {
-            System.err.println("Error finding products by name: " + e.getMessage());
+            logger.info("Error finding products by name: " + e.getMessage());
         }
         return products;
     }
