@@ -30,9 +30,9 @@ public class ProductRepositoryImpl implements ProductRepository {
             stmt.setDouble(2, p.getPrice());
             stmt.setInt(3, p.getStock());
             stmt.executeUpdate();
-            System.out.println("Product '" + p.getName() + "' added successfully.");
+            logger.info("Product '" + p.getName() + "' added successfully.");
         } catch (SQLException e) {
-            System.err.println("Error adding product: " + e.getMessage());
+            logger.info("Error adding product: " + e.getMessage());
         }
     }
 

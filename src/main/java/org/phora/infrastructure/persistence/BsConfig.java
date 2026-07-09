@@ -1,10 +1,12 @@
 package org.phora.infrastructure.persistence;
 
+import org.phora.domain.service.LoginService;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import java.util.logging.Logger;
 /**
  * Configuración de conexión a SQLite.
  * El archivo inventario.db se crea automáticamente en la carpeta
@@ -14,7 +16,7 @@ public class BsConfig {
 
     // Ruta relativa: el .db queda junto al ejecutable
     private static final String URL;
-
+    private static final Logger logger = Logger.getLogger(LoginService.class.getName());
     // 2. BLOQUE ESTÁTICO DE INICIALIZACIÓN DINÁMICA
     static {
         String userHome = System.getProperty("user.home");
@@ -46,7 +48,7 @@ public class BsConfig {
         try {
             return DriverManager.getConnection(URL);
         } catch (SQLException e) {
-            System.err.println("Error en getConnection(): " + e.getMessage());
+            logger.info("Error en getConnection(): " + e.getMessage());
             throw new RuntimeException("No se pudo conectar a la base de datos", e);
         }
     }

@@ -2,15 +2,17 @@ package org.phora.infrastructure.persistence;
 
 import org.phora.domain.model.User;
 import org.phora.domain.repository.UserRepository;
+import org.phora.domain.service.LoginService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 public class UserRepositoryImpl implements UserRepository {
-
+  private static final Logger logger = Logger.getLogger(LoginService.class.getName());
   @Override
   public Optional<User> findByUsername(String username) {
     String sql = "SELECT username, password_hash FROM users WHERE username = ?";
@@ -25,7 +27,7 @@ public class UserRepositoryImpl implements UserRepository {
         }
       }
     } catch (SQLException e) {
-      System.err.println("Error finding user: " + e.getMessage());
+      logger.info("Error finding user: " + e.getMessage());
     }
     return Optional.empty();
   }
