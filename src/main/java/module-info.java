@@ -5,6 +5,7 @@ module org.phora {
 
     requires java.sql;
     requires org.xerial.sqlitejdbc;
+    requires java.logging;
 
     opens org.phora to javafx.graphics;
     opens org.phora.presentation to javafx.graphics;
