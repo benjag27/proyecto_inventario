@@ -19,28 +19,10 @@ public class BsConfig {
     private static final Logger logger = Logger.getLogger(LoginService.class.getName());
     // 2. BLOQUE ESTÁTICO DE INICIALIZACIÓN DINÁMICA
     static {
-        String userHome = System.getProperty("user.home");
-        String os = System.getProperty("os.name").toLowerCase();
-        String appDir;
-
-        if (os.contains("win")) {
-            String appData = System.getenv("LOCALAPPDATA");
-            if (appData == null) {
-                appDir = userHome + java.io.File.separator + "PhoraInventario";
-            } else {
-                appDir = appData + java.io.File.separator + "PhoraInventario";
-            }
-        } else {
-            appDir = userHome + java.io.File.separator + ".phora_inventario";
-        }
-
-        java.io.File dir = new java.io.File(appDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
 
 
-        URL = "jdbc:sqlite:" + appDir + java.io.File.separator + "inventario.db";
+
+        URL = "jdbc:sqlite:inventario.db";
         initDB();
     }
 
