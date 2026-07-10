@@ -19,6 +19,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
 
+        this.context = new org.phora.infrastructure.AppContext();
 
 
         SceneManager sceneManager = new SceneManager(primaryStage, context);
