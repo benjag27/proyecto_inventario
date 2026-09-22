@@ -8,18 +8,20 @@ Aplicación ligera, de cero configuración, para el seguimiento de almacén y pr
 
 ## Para quién construimos
 
-- **Usuario final objetivo:** comercios locales (multi-negocio: la app se distribuye e instala en varios negocios distintos).
+- **Usuario final objetivo:** comercios locales (multi-negocio: la app se distribuye e instala, y se adapta, en varios negocios distintos).
+- **Adaptación por negocio:** la app ofrece flexibilidad de adaptación extra para cada negocio que la quiera usar, logrando una **experiencia personalizada** según sus necesidades y rubro.
 - **Modelo de operación:** un negocio = una sola computadora. La aplicación corre **100% local** en esa máquina.
 - **Datos:** cada instalación genera su propio archivo `inventario.db` en la carpeta de datos del usuario. No hay servidores, ni red, ni sincronización.
 - **Personas que la usan en cada negocio:** un **administrador** (dueño/encargado) + **empleados** con sus propias cuentas.
 
 ## Qué construimos
 
-- Autenticación segura multiusuario con roles prefijados (admin + empleados), hashing **PBKDF2WithHmacSHA256**.
-- Gestión completa de productos (CRUD + búsqueda en vivo por nombre).
-- Persistencia local en **SQLite embebida**, auto-gestionada y sin configuración por parte del usuario.
+- Autenticación segura multiusuario con roles (admin + empleados).
+- Gestión completa de productos: alta, modificación, baja y búsqueda en vivo por nombre.
+- Control de inventario local con stock y precios.
 - Registro de auditoría de acciones (quién hizo qué y cuándo).
-- GUI moderna con tema oscuro (JavaFX), multiplataforma (Windows y Linux).
+- Interfaz de escritorio moderna, sencilla y multiplataforma, con tema oscuro.
+- Adaptación extra por negocio para una experiencia personalizada.
 
 ## Por qué base de datos embebida
 
@@ -38,6 +40,7 @@ El sistema se diseña para **escalar** — de ahí la arquitectura en capas (ver
 - **Etapa A — Hoy:** SQLite embebida, un `inventario.db` por instalación, una PC por negocio.
 - **Etapa B — Versión con BD en la nube (preparada):** variante del sistema que **no depende del archivo local**; el inventario vive en una base de datos en la nube (accesible por red).
 - **Etapa C — Multiusuario con concurrencia:** varios usuarios (incluso desde distintas computadoras) consultan y modifican el mismo inventario simultáneamente, con datos **consistentes** (transacciones y control de concurrencia).
+- **Etapa D — Asistente con inteligencia artificial y análisis económicos:** asistencia inteligente para el manejo del inventario y análisis económicos del negocio (tendencias, rentabilidad, decisiones) basados en sus propios datos.
 
 Cada etapa se documentará como feature formal en `spec/features/` cuando se decida implementarla.
 

@@ -39,6 +39,7 @@ Estrategia global de escalabilidad. Son **hitos** que se descompondrán en featu
 | A | Despliegue actual: SQLite embebida, un `inventario.db` por instalación, una PC por negocio | done |
 | B | Versión alternativa con **base de datos en la nube**, no dependiente del archivo local | planned |
 | C | **Multiusuario con concurrencia**: varios usuarios consultan y modifican el mismo inventario con consistencia (transacciones, resolución de conflictos, roles) | later |
+| D | **Asistente con IA y análisis económicos**: asistencia inteligente para el inventario y análisis económicos del negocio (tendencias, rentabilidad, decisiones) sobre sus datos | later |
 
 Principios de la evolución:
 
