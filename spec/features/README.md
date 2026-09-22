@@ -2,7 +2,7 @@
 
 Aquí se documentan las features del proyecto antes de implementarlas. Cada feature tiene una carpeta numerada `NNN-nombre-corto/`.
 
-> **Estado actual:** el backlog está **por definir** (decisión explícita). Esta carpeta no contiene features concretas todavía. No crear carpetas `NNN-...` a menos que se definan en el `roadmap.md`.
+> **Estado actual:** las carpetas `spec/`, `plan.md` y `tasks.md` se versionan en el repositorio (rama `dev`) para que **todo el equipo trabaje con el mismo plan** de cada feature. La correspondencia feature ↔ issue se registra en el `spec/constitution/roadmap.md` y en la sección "Gestión de features (Issues)" del `CHANGELOG.md`. Los responsables van en cada issue de GitHub.
 
 ## Estructura de cada feature
 
