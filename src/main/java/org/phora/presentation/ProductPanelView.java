@@ -151,7 +151,7 @@ public class ProductPanelView {
             if (seleccionado != null) {
                 sceneManager.showProductForm(ProductFormView.Modo.BAJA, seleccionado);
             } else {
-                feedback("Seleccioná un producto de la lista para dar de baja.", true);
+                sceneManager.showProductForm(ProductFormView.Modo.BAJA_BUSCAR);
             }
         });
 
