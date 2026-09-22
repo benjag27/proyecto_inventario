@@ -22,7 +22,7 @@
 |---|---|---|
 | Flujo de Productos (listado + operaciones laterales + interfaz ensanchada) | Integrada vía PR #31 (ver subsección *Flujo de Productos*) | `done` |
 
-- [ADD] **Feature-001 documentada** con especificación completa local (`spec/features/001-baja-segura/` con `spec.md`, `plan.md` y `tasks.md`) y **issue creado en GitHub (#32)**; queda pendiente de implementación (flujo `feature/... → dev → main`)
+- [ADD] **Feature-001 documentada y versionada** con especificación completa (`spec/features/001-baja-segura/` con `spec.md`, `plan.md` y `tasks.md`) e **issue creado en GitHub (#32)**; las carpetas de features se comparten en el repo para que el equipo implemente con el mismo plan (cada LLM que tome el issue trabaja sobre el mismo `spec.md`/`plan.md`); queda pendiente de implementación (flujo `feature/... → dev → main`)
 
 ### Organización del desarrollo (especificación orientada a IA)
 - [ADD] Estructura `spec/` para desarrollo orientado a IA: carpeta `constitution/` con los documentos de constitución del proyecto y carpeta `features/` para documentar cada feature futura (`NNN-nombre/` con `spec.md`, `plan.md` y `tasks.md`)
