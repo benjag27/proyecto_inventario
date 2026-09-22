@@ -16,8 +16,8 @@
 |---|---|---|
 | Feature-001 — **Dar de baja seguro**: búsqueda por nombre/ID y confirmación explícita del ID al eliminar | [#32](https://github.com/benjag27/proyecto_inventario/issues/32) | `done` · implementado en `dev` (merge local) |
 | Feature-002 — **Códigos de barras**: opcionales y múltiples por producto; alta y modificación con agregar/quitar uno solo | [#33](https://github.com/benjag27/proyecto_inventario/issues/33) | `in-progress` · implementada en `dev` · spec en `spec/features/002-codigos-de-barra/` |
-| Feature-003 — **Transiciones suaves**: paso continuo entre Productos y sus operaciones sin corte seco ni salto de tamaño | [#35](https://github.com/benjag27/proyecto_inventario/issues/35) | `backlog` · spec en `spec/features/003-transiciones-suaves/` |
-| Feature-004 — **Estética coherente de los formularios**: `ProductFormView` con cabecera del módulo, campos alineados, resultados presentables y tamaño estable | [#36](https://github.com/benjag27/proyecto_inventario/issues/36) | `backlog` · spec en `spec/features/004-estetica-formularios/` |
+| Feature-003 — **Transiciones suaves**: paso continuo entre Productos y sus operaciones sin corte seco ni salto de tamaño | [#35](https://github.com/benjag27/proyecto_inventario/issues/35) | `done` · fade-in ~250 ms (`EASE_BOTH`) en `SceneManager.show` ·
+| Feature-004 — **Estética coherente de los formularios**: `ProductFormView` con cabecera del módulo, campos alineados, resultados presentables y tamaño estable | [#36](https://github.com/benjag27/proyecto_inventario/issues/36) | `done` · cabecera del módulo (`menu-header`) en `ProductFormView.createScene` ·
 
 **Hechas (implementadas y cerradas):**
 

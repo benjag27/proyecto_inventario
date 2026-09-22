@@ -1,11 +1,13 @@
 package org.phora.presentation;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import org.phora.domain.model.Product;
 import org.phora.infrastructure.AppContext;
-
 public class SceneManager {
 
     private final Stage stage;
@@ -63,8 +65,15 @@ public class SceneManager {
 
     private void show(Scene scene, String titulo) {
         stage.setTitle(titulo);
+        scene.getRoot().setOpacity(0);
         stage.setScene(scene);
         stage.show();
+
+        FadeTransition fade = new FadeTransition(Duration.millis(250), scene.getRoot());
+        fade.setFromValue(0);
+        fade.setToValue(1);
+        fade.setInterpolator(Interpolator.EASE_BOTH);
+        fade.play();
     }
 
     private void lockSize(double width, double height) {

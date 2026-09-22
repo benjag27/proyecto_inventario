@@ -51,10 +51,10 @@ public class ProductFormView {
 
     public Scene createScene() {
         Label title = new Label(titleForMode());
-        title.getStyleClass().add("login-title");
+        title.getStyleClass().add("menu-header");
 
         Label subtitle = new Label(subtitleForMode());
-        subtitle.getStyleClass().add("login-subtitle");
+        subtitle.getStyleClass().add("menu-subheader");
 
         Hyperlink back = new Hyperlink("← Volver");
         back.getStyleClass().add("logout-link");
