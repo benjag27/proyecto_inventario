@@ -134,17 +134,14 @@
     -fx-text-fill: #ff8a80;
 }
 
-.mac-titlebar {
     -fx-background-color: #2a3038;
     -fx-background-radius: 10 10 0 0;
 }
 
-.mac-title {
     -fx-text-fill: #c3cad2;
     -fx-font-size: 12.5px;
     -fx-font-weight: bold;
 }
 
-.mac-traffic .mac-light {
     -fx-stroke: rgba(0,0,0,0.25);
 }
