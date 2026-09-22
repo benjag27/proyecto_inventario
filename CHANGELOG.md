@@ -24,6 +24,13 @@
 - [CHANGE] Flujo de ramas operativo definido en `Manual.md`: `main` queda reservado como rama de **distribución** (solo releases e instaladores, prohibido push directo); `dev` pasa a ser la rama de **producción activa** donde trabaja el equipo (base de `feature/*`, integración del día a día)
 - [ADD] Estado actual del producto (estructura `spec/`, documentación, fix de bootstrap de login y ruta de BD) sincronizado en la rama `dev` del remoto (`origin/dev`) para desarrollo colaborativo
 
+### Flujo de Productos (interfaz)
+- [CHANGE] Flujo del módulo Productos: al abrir **Productos** se muestra directamente el **listado del inventario** (buscador en vivo por nombre + contador) y las operaciones (**dar de alta, modificar, dar de baja, buscar por ID, buscar por nombre**) como **botones en un panel lateral**
+- [ADD] Nueva vista `ProductPanelView` que integra listado + panel lateral de operaciones; los botones *Modificar* y *Dar de baja* actúan sobre el producto **seleccionado en la tabla**
+- [CHANGE] `ProductFormView` ahora acepta un producto **pre-cargado (prefill)** para pre-llenar los formularios de modificar/baja/buscar desde la selección; la navegación de vuelta apunta al nuevo panel
+- [REMOVE] `ProductMenuView` y `ProductListView`: su funcionalidad quedó absorbida por `ProductPanelView`
+- [CHANGE] Interfaz gráfica ensanchada: menú principal **1420×840**, pantalla de productos **1300×760** y formularios **760×540** (tarjeta de contenido 480px)
+
 ### Arquitectura base
 - [ADD] Definición de arquitectura formal en 4 capas desacopladas: `domain`, `application`, `infrastructure`, `presentation`
 - [ADD] Paquete base `org.phora` bajo la estructura jerárquica de ciclo de vida Maven estándar

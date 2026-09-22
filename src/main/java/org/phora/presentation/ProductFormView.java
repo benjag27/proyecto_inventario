@@ -24,13 +24,19 @@ public class ProductFormView {
     private final AppContext context;
     private final SceneManager sceneManager;
     private final Modo modo;
+    private final Product prefill;
 
     private final Label lblMessage = new Label();
 
     public ProductFormView(AppContext context, SceneManager sceneManager, Modo modo) {
+        this(context, sceneManager, modo, null);
+    }
+
+    public ProductFormView(AppContext context, SceneManager sceneManager, Modo modo, Product prefill) {
         this.context = context;
         this.sceneManager = sceneManager;
         this.modo = modo;
+        this.prefill = prefill;
     }
 
     public Scene createScene() {
@@ -42,7 +48,7 @@ public class ProductFormView {
 
         Hyperlink back = new Hyperlink("← Volver");
         back.getStyleClass().add("logout-link");
-        back.setOnAction(e -> sceneManager.showProductMenu());
+        back.setOnAction(e -> sceneManager.showProductPanel());
 
         VBox heading = new VBox(4, title, subtitle);
         HBox top = new HBox(heading);
@@ -59,14 +65,14 @@ public class ProductFormView {
         VBox content = new VBox(20, top, fields, lblMessage);
         content.getStyleClass().add("login-card");
         content.setPadding(new Insets(40));
-        content.setMaxWidth(420);
-        content.setMinWidth(420);
+        content.setMaxWidth(480);
+        content.setMinWidth(480);
 
         BorderPane root = new BorderPane();
         root.getStyleClass().add("root");
         root.setCenter(content);
 
-        Scene scene = new Scene(root, 640, 480);
+        Scene scene = new Scene(root, 760, 540);
         scene.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
         return scene;
     }
@@ -120,6 +126,13 @@ public class ProductFormView {
         TextField txtPrice = field("Nuevo precio");
         TextField txtStock = field("Nuevo stock");
 
+        if (prefill != null) {
+            txtId.setText(String.valueOf(prefill.getId()));
+            txtName.setText(prefill.getName());
+            txtPrice.setText(String.valueOf(prefill.getPrice()));
+            txtStock.setText(String.valueOf(prefill.getStock()));
+        }
+
         Button btn = primaryButton("Guardar cambios");
         btn.setOnAction(e -> {
             try {
@@ -147,6 +160,7 @@ public class ProductFormView {
 
     private VBox formBaja() {
         TextField txtId = field("ID del producto a eliminar");
+        if (prefill != null) txtId.setText(String.valueOf(prefill.getId()));
 
         Button btn = primaryButton("Eliminar producto");
         btn.setOnAction(e -> {
@@ -172,6 +186,7 @@ public class ProductFormView {
 
     private VBox formBuscar() {
         TextField txtId = field("ID del producto a buscar");
+        if (prefill != null) txtId.setText(String.valueOf(prefill.getId()));
 
         Button btn = primaryButton("Buscar");
         btn.setOnAction(e -> {
