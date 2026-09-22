@@ -55,6 +55,7 @@ Principios de la evolución:
 | # | Feature | Issue | Estado |
 |---|---|---|---|
 | 001 | **Dar de baja seguro** — búsqueda por nombre/ID y confirmación explícita del ID al eliminar | [#32](https://github.com/benjag27/proyecto_inventario/issues/32) | `backlog` |
+| 002 | **Códigos de barras** — opcionales y múltiples por producto; agregar y eliminar uno solo desde la modificación | [#33](https://github.com/benjag27/proyecto_inventario/issues/33) | `backlog` |
 
 Pendiente técnico conocido (no es una feature, es deuda de configuración):
 
