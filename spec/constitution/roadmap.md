@@ -1,0 +1,66 @@
+# Roadmap
+
+Orden de desarrollo de features del proyecto, orientado a desarrollo con IA.
+
+## Ciclo de una feature
+
+Toda feature nueva sigue su carpeta en `spec/features/NNN-nombre/`:
+
+1. `spec.md` — qué hace la feature + criterios de aceptación (debe aprobarse antes de implementar).
+2. `plan.md` — cómo se implementa (capas afectadas, archivos, riesgos).
+3. `tasks.md` — checklist de tareas accionables.
+
+Reglas:
+- Una feature solo pasa a `in-progress` cuando su `spec.md` está aprobado.
+- Todo cambio se registra en `CHANGELOG.md` (`[TIPO]`).
+- Todo desarrollo sigue el flujo de ramas del `Manual.md` (`feature/nombre-de-la-tarea` → `dev` → `main`).
+
+## Estado actual (respaldado por el CHANGELOG)
+
+> Fase base — correspondiente a la release `1.0-SNAPSHOT` / `1.0.0-beta`. Todo esto está **implementado**.
+
+| Área | Estado |
+|---|---|
+| Arquitectura formal en 4 capas (`domain`, `application`, `infrastructure`, `presentation`) | done |
+| Autenticación multiusuario (login + PBKDF2WithHmacSHA256, comparación en tiempo constante) | done |
+| CRUD de productos (`AddProduct`, `UpdateProduct`, `DeleteProduct`, `FindProduct`) | done |
+| Búsqueda en vivo por nombre (`FindByName`) | done |
+| Persistencia SQLite embebida con auto-creación de tablas y datos iniciales | done |
+| Auditoría de acciones (`audit_logs` + vista `AuditLogView`) | done |
+| GUI JavaFX con tema oscuro y menú principal | done |
+| Protocolo de compilación/despliegue (`jlink` + `jpackage`, `.msi` y `.deb`) | done |
+
+## Visión de evolución (hitos estratégicos)
+
+Estrategia global de escalabilidad. Son **hitos** que se descompondrán en features concretas (`spec/features/NNN-.../`) cuando se decida avanzar; el backlog operativo sigue "por definir".
+
+| Fase | Descripción | Estado |
+|---|---|---|
+| A | Despliegue actual: SQLite embebida, un `inventario.db` por instalación, una PC por negocio | done |
+| B | Versión alternativa con **base de datos en la nube**, no dependiente del archivo local | planned |
+| C | **Multiusuario con concurrencia**: varios usuarios consultan y modifican el mismo inventario con consistencia (transacciones, resolución de conflictos, roles) | later |
+
+Principios de la evolución:
+
+- La **arquitectura por capas** es lo que habilita las fases B y C: se reemplaza la infraestructura (`*Impl` de `domain/repository/`), no la lógica de negocio.
+- La versión local (fase A) y la futura nube (fase B) **conviven como variantes** del sistema dentro del mismo código base.
+
+## Backlog — por definir
+
+> Las features **no están definidas todavía** (decisión explícita). Este listado se completa cuando definamos prioridades reales. No inventar features aquí.
+
+| # | Feature | Estado |
+|---|---|---|
+| — | *por definir* | backlog |
+
+Pendiente técnico conocido (no es una feature, es deuda de configuración):
+
+| Item | Estado |
+|---|---|
+| Mover `inventario.db` de la ruta relativa (`BsConfig.java:25`) a la carpeta de datos del usuario (`Documents/Phora/`) | pendiente |
+
+## Reglas de este documento
+
+1. Agregar una feature = crear carpeta `spec/features/NNN-nombre/` con `spec.md`, `plan.md` y `tasks.md`.
+2. El orden en este archivo es la prioridad; reordenar aquí **antes** de empezar a implementar.
+3. Las features ya implementadas no se re-incluyen como backlog: su historial vive en `CHANGELOG.md`.
