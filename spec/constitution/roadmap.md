@@ -26,9 +26,11 @@ Reglas:
 | CRUD de productos (`AddProduct`, `UpdateProduct`, `DeleteProduct`, `FindProduct`) | done |
 | Búsqueda en vivo por nombre (`FindByName`) | done |
 | Persistencia SQLite embebida con auto-creación de tablas y datos iniciales | done |
+| Base de datos en `~/.phora_inventario/` (ruta fija independiente del cwd) + bootstrap del admin (`admin`/`admin123`, PBKDF2) en primera ejecución | done |
 | Auditoría de acciones (`audit_logs` + vista `AuditLogView`) | done |
 | GUI JavaFX con tema oscuro y menú principal | done |
 | Protocolo de compilación/despliegue (`jlink` + `jpackage`, `.msi` y `.deb`) | done |
+| Test automatizado de bootstrap de base de datos (`BsConfigTest`) | done |
 
 ## Visión de evolución (hitos estratégicos)
 
@@ -58,7 +60,7 @@ Pendiente técnico conocido (no es una feature, es deuda de configuración):
 
 | Item | Estado |
 |---|---|
-| Mover `inventario.db` de la ruta relativa (`BsConfig.java:25`) a la carpeta oculta del home del usuario (`~/.phora_inventario/`) | pendiente |
+| ~~Mover `inventario.db` a `~/.phora_inventario/`~~ — resuelto en `BsConfig.java` | done |
 
 ## Reglas de este documento
 

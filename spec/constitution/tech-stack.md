@@ -19,9 +19,8 @@
 - **Ciclo de vida:** las tablas se auto-crean con `CREATE TABLE IF NOT EXISTS` al arrancar (`BsConfig.initDB()`).
 
 ### Ruta del archivo de base de datos
-- **Target (definido):** el `inventario.db` se crea en una **carpeta oculta dentro del home del usuario** → `~/.phora_inventario/inventario.db` (Linux/macOS) y `%USERPROFILE%\.phora_inventario\inventario.db` (Windows). Se calcula dinámicamente según el SO previa creación del directorio. **Criterio de aislamiento:** evitar sobrescrituras de datos durante sincronizaciones/actualizaciones del código, según README.
-- **Estado actual (pendiente de código):** hoy `BsConfig.java:25` usa la ruta relativa `jdbc:sqlite:inventario.db`, que crea el archivo **junto al ejecutable**. Esto es problemático en Windows (sin permiso de escritura en `Program Files`) y pierde datos al reinstalar. **Pendiente: migrar `BsConfig` a la carpeta de datos del usuario.**
-- **Por qué carpeta de usuario:** sobrevive a reinstalaciones/actualizaciones del programa y es visible y fácil de copiar para el dueño del negocio (respaldo manual).
+- **Definido e implementado:** el `inventario.db` se crea en una **carpeta oculta dentro del home del usuario** → `~/.phora_inventario/inventario.db` (Linux/macOS) y `%USERPROFILE%\.phora_inventario\inventario.db` (Windows). Se calcula dinámicamente según el SO previa creación del directorio (`BsConfig.java`). **Criterio de aislamiento:** independiente del directorio desde donde se ejecute la app; evitar sobrescrituras de datos durante sincronizaciones/actualizaciones del código, según README.
+- **Bootstrapping:** en la primera ejecución (tabla `users` vacía), `BsConfig` crea automáticamente el usuario administrador por defecto (`admin` / `admin123`) con hashing PBKDF2. La contraseña nunca se guarda en texto plano.
 
 ### JavaFX 21
 - **Por qué:** GUI de escritorio multiplataforma (Windows + Linux) nativa, con tema oscuro, para una app local de una sola PC.

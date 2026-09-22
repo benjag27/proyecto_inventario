@@ -2,27 +2,38 @@ package org.phora.infrastructure.persistence;
 
 import org.phora.domain.service.LoginService;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
+
 /**
  * Configuración de conexión a SQLite.
- * El archivo inventario.db se crea automáticamente en la carpeta
- * donde corre la app — no requiere instalación de ningún servidor.
+ * La base de datos vive en una carpeta oculta dentro del home del usuario
+ * (~/.phora_inventario/inventario.db), independiente del directorio desde
+ * donde se ejecute la app, evitando sobrescrituras por sincronizaciones o
+ * actualizaciones, y soportando instalaciones con permisos restringidos
+ * (ej: Program Files en Windows). No requiere instalación de ningún servidor.
  */
 public class BsConfig {
 
-    // Ruta relativa: el .db queda junto al ejecutable
+    // Ruta dinámica: la BD se crea en ~/.phora_inventario/, junto al programa
+    private static final String DB_DIR = System.getProperty("user.home")
+            + File.separator + ".phora_inventario";
+    private static final String DB_FILE = "inventario.db";
     private static final String URL;
     private static final Logger logger = Logger.getLogger(LoginService.class.getName());
-    // 2. BLOQUE ESTÁTICO DE INICIALIZACIÓN DINÁMICA
+
+    // Credenciales por defecto de primera ejecución (seed)
+    private static final String DEFAULT_ADMIN_USERNAME = "admin";
+    private static final String DEFAULT_ADMIN_PASSWORD = "admin123";
+
     static {
-
-
-
-        URL = "jdbc:sqlite:inventario.db";
+        URL = "jdbc:sqlite:" + DB_DIR + File.separator + DB_FILE;
         initDB();
     }
 
@@ -36,10 +47,15 @@ public class BsConfig {
     }
 
     /**
-     * Crea las tablas si no existen todavía.
-     * Se ejecuta una sola vez al arrancar la app.
+     * Crea las tablas si no existen todavía y siembra el usuario administrador
+     * por defecto la primera vez (cuando la tabla users está vacía).
      */
     private static void initDB() {
+        File dir = new File(DB_DIR);
+        if (!dir.exists() && dir.mkdirs()) {
+            logger.info("Directorio de base de datos creado: " + DB_DIR);
+        }
+
         String createProducts = """
                 CREATE TABLE IF NOT EXISTS products (
                     id    INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -74,6 +90,33 @@ public class BsConfig {
             stmt.execute(createAuditLogs);
         } catch (SQLException e) {
             throw new RuntimeException("Error al inicializar la base de datos", e);
+        }
+
+        seedDefaultAdmin();
+    }
+
+    /**
+     * Crea el usuario administrador por defecto únicamente si la tabla users
+     * está vacía (primera ejecución / instalación limpia).
+     */
+    private static void seedDefaultAdmin() {
+        String countSql = "SELECT COUNT(*) FROM users";
+        String insertSql = "INSERT INTO users (username, password_hash) VALUES (?, ?)";
+
+        try (Connection conn = getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(countSql)) {
+            if (rs.next() && rs.getInt(1) == 0) {
+                String hash = LoginService.hashPassword(DEFAULT_ADMIN_PASSWORD);
+                try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
+                    ps.setString(1, DEFAULT_ADMIN_USERNAME);
+                    ps.setString(2, hash);
+                    ps.executeUpdate();
+                }
+                logger.info("Usuario administrador por defecto creado en primera ejecución");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al sembrar el usuario administrador", e);
         }
     }
 }

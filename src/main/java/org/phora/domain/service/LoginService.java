@@ -48,7 +48,7 @@ public class LoginService {
    * Genera un hash PBKDF2 para una contraseña plana.
    * Úsalo al crear o registrar un usuario nuevo.
    */
-  public String hashPassword(String rawPassword) {
+  public static String hashPassword(String rawPassword) {
     try {
       SecureRandom random = new SecureRandom();
       byte[] salt = new byte[SALT_LENGTH];
@@ -87,12 +87,12 @@ public class LoginService {
   }
 
   // Sobrecargamos pbkdf2 para la creación de nuevos hashes
-  private byte[] pbkdf2(char[] password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
+  private static byte[] pbkdf2(char[] password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
     return pbkdf2(password, salt, ITERATIONS, KEY_LENGTH);
   }
 
   // Método definitivo que procesa dinámicamente según lo requerido
-  private byte[] pbkdf2(char[] password, byte[] salt, int iterations, int keyLength) throws NoSuchAlgorithmException, InvalidKeySpecException {
+  private static byte[] pbkdf2(char[] password, byte[] salt, int iterations, int keyLength) throws NoSuchAlgorithmException, InvalidKeySpecException {
     PBEKeySpec spec = new PBEKeySpec(password, salt, iterations, keyLength);
     SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
     return skf.generateSecret(spec).getEncoded();

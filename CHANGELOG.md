@@ -17,6 +17,10 @@
 - [ADD] Racional de escalabilidad de la arquitectura por capas: las interfaces de repositorio (`domain/repository/`) son el punto de extensión para migrar la infraestructura de datos (SQLite local → base de datos en la nube) sin tocar la lógica de negocio (`domain` / `application`)
 - [ADD] Visión de evolución definida en `spec/constitution/roadmap.md`: (A) despliegue local embebido actual, (B) versión con base de datos en la nube no dependiente del archivo local, (C) multiusuario con concurrencia y consistencia de datos (transacciones, resolución de conflictos, roles), (D) asistente con inteligencia artificial y análisis económicos del negocio sobre sus propios datos
 - [CHANGE] Decisión de arquitectura de datos (pendiente de implementar): el `inventario.db` debe migrar de la ruta relativa (`jdbc:sqlite:inventario.db` en `BsConfig.java`) a una carpeta oculta dentro del home del usuario (`~/.phora_inventario/`), para soportar instalación en Windows (`Program Files` sin permisos de escritura), sobrevivir a reinstalaciones y actualizaciones, y evitar sobrescrituras de datos durante sincronizaciones del código
+- [CHANGE] **Ruta de la base de datos implementada:** `BsConfig.java` migra a `~/.phora_inventario/inventario.db` (carpeta oculta en el home, creada dinámicamente según el SO), independiente del directorio de ejecución — resuelve el login fallido al abrir la app desde terminal (el `.db` se creaba según el cwd)
+- [ADD] **Bootstrapping del usuario administrador:** en la primera ejecución (tabla `users` vacía), `BsConfig.seedDefaultAdmin()` crea `admin` / `admin123` con hashing PBKDF2; la contraseña nunca se guarda en texto plano
+- [CHANGE] `LoginService.hashPassword` y los helpers `pbkdf2` pasan a ser estáticos (funciones puras), permitiendo al bootstrap generar el hash sin instanciar el repositorio
+- [ADD] Test automatizado `BsConfigTest` (JUnit 5) verificando el seed del admin en la primera ejecución y el formato no-plano del hash
 
 ### Arquitectura base
 - [ADD] Definición de arquitectura formal en 4 capas desacopladas: `domain`, `application`, `infrastructure`, `presentation`
