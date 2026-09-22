@@ -48,13 +48,13 @@ Principios de la evolución:
 - La **arquitectura por capas** es lo que habilita las fases B y C: se reemplaza la infraestructura (`*Impl` de `domain/repository/`), no la lógica de negocio.
 - La versión local (fase A) y la futura nube (fase B) **conviven como variantes** del sistema dentro del mismo código base.
 
-## Backlog — por definir
+## Backlog de features
 
-> Las features **no están definidas todavía** (decisión explícita). Este listado se completa cuando definamos prioridades reales. No inventar features aquí.
+> Las features se definen aquí con su estado y su issue en GitHub. Cada una tiene su carpeta en `spec/features/NNN-nombre/`.
 
-| # | Feature | Estado |
-|---|---|---|
-| — | *por definir* | backlog |
+| # | Feature | Issue | Estado |
+|---|---|---|---|
+| 001 | **Dar de baja seguro** — búsqueda por nombre/ID y confirmación explícita del ID al eliminar | [#32](https://github.com/benjag27/proyecto_inventario/issues/32) | `backlog` |
 
 Pendiente técnico conocido (no es una feature, es deuda de configuración):
 

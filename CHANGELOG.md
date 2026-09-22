@@ -7,6 +7,23 @@
 
 ## [1.0-SNAPSHOT] — En desarrollo continuo
 
+### Gestión de features (Issues)
+> Los responsables/assignees se definen **en cada issue de GitHub**. Esta tabla es la traza de estado para cualquier agente o integrante del equipo: qué falta, qué está en curso y qué se terminó.
+
+**Por hacer / En curso (backlog):**
+
+| Feature | Issue | Estado |
+|---|---|---|
+| Feature-001 — **Dar de baja seguro**: búsqueda por nombre/ID y confirmación explícita del ID al eliminar | [#32](https://github.com/benjag27/proyecto_inventario/issues/32) | `backlog` · spec en `spec/features/001-baja-segura/` |
+
+**Hechas (implementadas y cerradas):**
+
+| Feature | Referencia | Estado |
+|---|---|---|
+| Flujo de Productos (listado + operaciones laterales + interfaz ensanchada) | Integrada vía PR #31 (ver subsección *Flujo de Productos*) | `done` |
+
+- [ADD] **Feature-001 documentada** con especificación completa local (`spec/features/001-baja-segura/` con `spec.md`, `plan.md` y `tasks.md`) y **issue creado en GitHub (#32)**; queda pendiente de implementación (flujo `feature/... → dev → main`)
+
 ### Organización del desarrollo (especificación orientada a IA)
 - [ADD] Estructura `spec/` para desarrollo orientado a IA: carpeta `constitution/` con los documentos de constitución del proyecto y carpeta `features/` para documentar cada feature futura (`NNN-nombre/` con `spec.md`, `plan.md` y `tasks.md`)
 - [ADD] `spec/constitution/mission.md` — qué se construye y para quién: sistema de inventario de escritorio local, multi-negocio, una PC por negocio, base de datos embebida (un `inventario.db` por instalación), modelo de uso admin + empleados
