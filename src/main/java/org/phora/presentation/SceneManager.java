@@ -3,6 +3,7 @@ package org.phora.presentation;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import org.phora.domain.model.Product;
 import org.phora.infrastructure.AppContext;
 
 public class SceneManager {
@@ -31,24 +32,20 @@ public class SceneManager {
         stage.centerOnScreen();
     }
 
-    public void showProductMenu() {
-        ProductMenuView productMenuView = new ProductMenuView(context, this);
+    public void showProductPanel() {
+        ProductPanelView panelView = new ProductPanelView(context, this);
         freeSize();
-        show(productMenuView.createScene(), "Inventario — Productos");
-        lockSize(ProductMenuView.WIDTH, ProductMenuView.HEIGHT);
-        stage.centerOnScreen();
-    }
-
-    public void showProductList() {
-        ProductListView listView = new ProductListView(context, this);
-        freeSize();
-        show(listView.createScene(), "Inventario — Listado de productos");
-        lockSize(ProductListView.WIDTH, ProductListView.HEIGHT);
+        show(panelView.createScene(), "Inventario — Productos");
+        lockSize(ProductPanelView.WIDTH, ProductPanelView.HEIGHT);
         stage.centerOnScreen();
     }
 
     public void showProductForm(ProductFormView.Modo modo) {
-        ProductFormView formView = new ProductFormView(context, this, modo);
+        showProductForm(modo, null);
+    }
+
+    public void showProductForm(ProductFormView.Modo modo, Product prefill) {
+        ProductFormView formView = new ProductFormView(context, this, modo, prefill);
         freeSize();
         show(formView.createScene(), "Inventario — Productos");
         stage.sizeToScene();

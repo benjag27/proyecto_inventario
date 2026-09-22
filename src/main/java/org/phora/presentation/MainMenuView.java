@@ -23,8 +23,8 @@ public class MainMenuView {
 
     private final AppContext context;
     private final SceneManager sceneManager;
-    public static final double WIDTH = 980;
-    public static final double HEIGHT = 680;
+    public static final double WIDTH = 1420;
+    public static final double HEIGHT = 840;
 
     public MainMenuView(AppContext context, SceneManager sceneManager) {
         this.context = context;
@@ -56,11 +56,10 @@ public class MainMenuView {
         grilla.setAlignment(Pos.TOP_LEFT);
 
 
-        grilla.add(createCard("📦", "Productos", "Alta, baja y stock", this::openProducts), 0, 0);
+        grilla.add(createCard("📦", "Productos", "Listado, alta, baja y stock", this::openProducts), 0, 0);
         grilla.add(createCard("🏷️", "Categorías", "Organizá tus rubros", this::proximamente), 1, 0);
-        grilla.add(createCard("🔄", "Movimientos", "Entradas y salidas", this::proximamente), 0, 1);
-        grilla.add(createCard("👤", "Usuarios", "Accesos del equipo", this::proximamente), 1, 1);
-        grilla.add(createCard("🔄", "Movimientos", "Entradas y salidas", this::openAuditLog), 0, 1);
+        grilla.add(createCard("👤", "Usuarios", "Accesos del equipo", this::proximamente), 0, 1);
+        grilla.add(createCard("🔄", "Movimientos", "Entradas y salidas", this::openAuditLog), 1, 1);
 
         VBox contenido = new VBox(20, top, grilla); // Añadimos 20px de espacio interno constante entre el top y la grilla
         contenido.setPadding(new Insets(40));
@@ -93,7 +92,7 @@ public class MainMenuView {
     }
 
     private void openProducts() {
-        sceneManager.showProductMenu();
+        sceneManager.showProductPanel();
     }
 
     private void openAuditLog() {
