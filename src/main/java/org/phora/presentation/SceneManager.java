@@ -5,6 +5,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.scene.Scene;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -68,6 +69,7 @@ public class SceneManager {
     private void show(Scene scene, String titulo) {
         stage.setTitle(titulo);
         scene.getRoot().setOpacity(0);
+        scene.setFill(Color.web("#1e2329"));
         stage.setScene(scene);
         stage.show();
 
