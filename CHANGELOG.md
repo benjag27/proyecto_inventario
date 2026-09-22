@@ -21,6 +21,8 @@
 - [ADD] **Bootstrapping del usuario administrador:** en la primera ejecución (tabla `users` vacía), `BsConfig.seedDefaultAdmin()` crea `admin` / `admin123` con hashing PBKDF2; la contraseña nunca se guarda en texto plano
 - [CHANGE] `LoginService.hashPassword` y los helpers `pbkdf2` pasan a ser estáticos (funciones puras), permitiendo al bootstrap generar el hash sin instanciar el repositorio
 - [ADD] Test automatizado `BsConfigTest` (JUnit 5) verificando el seed del admin en la primera ejecución y el formato no-plano del hash
+- [CHANGE] Flujo de ramas operativo definido en `Manual.md`: `main` queda reservado como rama de **distribución** (solo releases e instaladores, prohibido push directo); `dev` pasa a ser la rama de **producción activa** donde trabaja el equipo (base de `feature/*`, integración del día a día)
+- [ADD] Estado actual del producto (estructura `spec/`, documentación, fix de bootstrap de login y ruta de BD) sincronizado en la rama `dev` del remoto (`origin/dev`) para desarrollo colaborativo
 
 ### Arquitectura base
 - [ADD] Definición de arquitectura formal en 4 capas desacopladas: `domain`, `application`, `infrastructure`, `presentation`

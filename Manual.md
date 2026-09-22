@@ -8,14 +8,15 @@ Este documento establece las normas obligatorias para la organización del códi
 
 El repositorio se divide en tres niveles jerárquicos de aislamiento. Queda prohibido alterar el propósito de cualquiera de estas ramas.
 
-###  Rama `main` (Producción Estable)
-* **Propósito:** Alojar exclusivamente las versiones de software 100% estables, probadas y listas para el usuario final.
-* **Normativa:** De esta rama se generan los instaladores oficiales (`.msi`, `.deb`, etc.) mediante las *Releases* de GitHub.
+###  Rama `main` (Distribución / Releases)
+* **Propósito:** rama de **distribución**. Aloja exclusivamente las versiones 100% estables y probadas, únicamente para generar los instaladores oficiales (`.msi`, `.deb`, etc.) mediante las *Releases* de GitHub.
+* **Normativa:** NO es una rama de trabajo. Todo el desarrollo ocurre en `dev` y sus ramas `feature/*`.
 * **Restricción crítica:** **PROHIBIDO** realizar `git push` directo a `main`. El código solo ingresa aquí mediante fusión autorizada por el administrador del proyecto tras el cierre de un ciclo de desarrollo.
 
-###  Rama `dev` (Integración y Ensamblaje)
-* **Propósito:** Concentrar las funciones y pantallas recientemente finalizadas para comprobar su interacción mutua.
-* **Normativa:** Es la rama base del día a día. Refleja el estado intermedio actual del desarrollo del proyecto.
+###  Rama `dev` (Producción activa / Integración)
+* **Propósito:** rama de **producción activa**. Es la base de trabajo del equipo (donde se desarrolla junto al/os compañero/s). Concentra las funciones y pantallas recientemente finalizadas para comprobar su interacción mutua.
+* **Normativa:** es la rama base del día a día: se parte de ella para crear `feature/*` y refleja el estado actual del desarrollo. El estado del producto (incluidos los fixes, como el de bootstrap de login) vive aquí.
+* **Sincronización:** el equipo debe `git pull origin dev` antes de cada tarea y `git push origin dev` al integrar (ver secciones 2 y 3).
 
 ###  Ramas `feature/` (Desarrollo Especializado)
 * **Propósito:** Aislar la codificación de una única tarea o Issue específica (ej: `feature/busqueda-nombre`, `feature/alerta-stock`).
