@@ -3,10 +3,15 @@ package org.phora.presentation;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -15,11 +20,12 @@ import javafx.scene.layout.VBox;
 import org.phora.domain.model.Product;
 import org.phora.infrastructure.AppContext;
 
+import java.util.List;
 import java.util.Optional;
 
 public class ProductFormView {
 
-    public enum Modo { ALTA, MODIFICAR, BAJA, BUSCAR , BUSCAR_NOMBRE}
+    public enum Modo { ALTA, MODIFICAR, BAJA, BUSCAR , BUSCAR_NOMBRE, BAJA_BUSCAR}
 
     private final AppContext context;
     private final SceneManager sceneManager;
@@ -82,6 +88,7 @@ public class ProductFormView {
             case ALTA:     return formAlta();
             case MODIFICAR: return formModificar();
             case BAJA:     return formBaja();
+            case BAJA_BUSCAR: return formBajaBuscar();
             case BUSCAR: return formBuscar();
             case  BUSCAR_NOMBRE: return formBuscarNombre();
             default: return formBuscar();
@@ -160,26 +167,136 @@ public class ProductFormView {
 
     private VBox formBaja() {
         TextField txtId = field("ID del producto a eliminar");
-        if (prefill != null) txtId.setText(String.valueOf(prefill.getId()));
+
+        Label lblProduct = new Label();
+        lblProduct.getStyleClass().add("login-subtitle");
+        lblProduct.setWrapText(true);
+
+        if (prefill != null) {
+            txtId.setText(String.valueOf(prefill.getId()));
+            txtId.setEditable(false);
+            lblProduct.setText("Producto: " + prefill.getName()
+                    + " | Precio: $" + String.format("%.2f", prefill.getPrice())
+                    + " | Stock: " + prefill.getStock());
+            lblProduct.setManaged(true);
+            lblProduct.setVisible(true);
+        } else {
+            lblProduct.setManaged(false);
+            lblProduct.setVisible(false);
+        }
 
         Button btn = primaryButton("Eliminar producto");
         btn.setOnAction(e -> {
+            int id;
             try {
-                int id = Integer.parseInt(txtId.getText().trim());
-                boolean deleted = context.getDeleteProductUseCase().execute(id,"admin");
-
-                if (deleted) {
-                    showMessage("Producto eliminado correctamente.", false);
-                    txtId.clear();
-                } else {
-                    showMessage("No se encontró un producto con ese ID.", true);
-                }
+                id = (prefill != null) ? prefill.getId() : Integer.parseInt(txtId.getText().trim());
             } catch (NumberFormatException ex) {
                 showMessage("El ID debe ser un número entero.", true);
+                return;
+            }
+
+            if (!confirmDelete(id, prefill)) return;
+
+            boolean deleted = context.getDeleteProductUseCase().execute(id, "admin");
+            if (deleted) {
+                showMessage("Producto eliminado correctamente.", false);
+                sceneManager.showProductPanel();
+            } else {
+                showMessage("No se encontró un producto con ese ID.", true);
             }
         });
 
-        return new VBox(12, txtId, btn);
+        return new VBox(12, lblProduct, txtId, btn);
+    }
+
+    // --- BAJA_BUSCAR (búsqueda para dar de baja sin selección previa) ---
+
+    private VBox formBajaBuscar() {
+        TextField txtNombre = field("Buscar por nombre (o parte)...");
+        TextField txtId = field("Buscar por ID exacto...");
+
+        Button btnBuscarNombre = primaryButton("Buscar por nombre");
+        Button btnBuscarId = primaryButton("Buscar por ID");
+        Button btnContinuar = primaryButton("Eliminar seleccionado");
+        btnContinuar.setDisable(true);
+
+        TableView<Product> results = new TableView<>();
+        TableColumn<Product, Integer> colId = new TableColumn<>("ID");
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colId.setPrefWidth(60);
+        colId.setStyle("-fx-alignment: CENTER;");
+        TableColumn<Product, String> colName = new TableColumn<>("Nombre");
+        colName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        colName.setPrefWidth(220);
+        TableColumn<Product, Integer> colStock = new TableColumn<>("Stock");
+        colStock.setCellValueFactory(new PropertyValueFactory<>("stock"));
+        colStock.setPrefWidth(80);
+        colStock.setStyle("-fx-alignment: CENTER;");
+        results.getColumns().addAll(colId, colName, colStock);
+        results.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        results.setPlaceholder(new Label("Sin resultados. Buscá por nombre o por ID."));
+        results.setPrefHeight(170);
+        results.setMaxHeight(170);
+
+        results.getSelectionModel().selectedItemProperty()
+                .addListener((obs, old, sel) -> btnContinuar.setDisable(sel == null));
+
+        btnBuscarNombre.setOnAction(e -> {
+            String name = txtNombre.getText().trim();
+            if (name.isEmpty()) {
+                showMessage("Ingresá un nombre o parte del nombre para buscar.", true);
+                return;
+            }
+            List<Product> found = context.getFindByNameUseCase().execute(name);
+            results.getItems().setAll(found);
+            btnContinuar.setDisable(found.isEmpty());
+            if (found.isEmpty()) {
+                showMessage("No se encontraron productos con ese nombre.", true);
+            } else {
+                showMessage(found.size() + " producto(s) encontrado(s). Seleccioná uno para eliminar.", false);
+            }
+        });
+
+        btnBuscarId.setOnAction(e -> {
+            int id;
+            try {
+                id = Integer.parseInt(txtId.getText().trim());
+            } catch (NumberFormatException ex) {
+                showMessage("El ID debe ser un número entero.", true);
+                return;
+            }
+            Optional<Product> found = context.getFindProductUseCase().execute(id);
+            if (found.isPresent()) {
+                results.getItems().setAll(found.get());
+                btnContinuar.setDisable(false);
+                showMessage("Producto encontrado. Seleccioná para eliminar.", false);
+            } else {
+                results.getItems().clear();
+                btnContinuar.setDisable(true);
+                showMessage("No se encontró un producto con ese ID.", true);
+            }
+        });
+
+        btnContinuar.setOnAction(e -> {
+            Product selected = results.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                sceneManager.showProductForm(Modo.BAJA, selected);
+            }
+        });
+
+        return new VBox(12, txtNombre, btnBuscarNombre, txtId, btnBuscarId, results, btnContinuar);
+    }
+
+    private boolean confirmDelete(int id, Product p) {
+        String content = (p != null)
+                ? "¿Eliminar el producto \"" + p.getName() + "\" (ID " + id + ")?"
+                : "¿Eliminar el producto con ID " + id + "?";
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Dar de baja");
+        alert.setHeaderText("Confirmación de baja");
+        alert.setContentText(content);
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.OK;
     }
 
     // --- BUSCAR ---
@@ -265,6 +382,7 @@ public class ProductFormView {
             case ALTA:      return "Dar de alta";
             case MODIFICAR: return "Modificar producto";
             case BAJA:      return "Dar de baja";
+            case BAJA_BUSCAR: return "Dar de baja";
             case BUSCAR:    return "Buscar producto";
 
             case BUSCAR_NOMBRE: return "Buscar por nombre";
@@ -277,6 +395,7 @@ public class ProductFormView {
             case ALTA:      return "Completá los datos del nuevo producto";
             case MODIFICAR: return "Ingresá el ID y los nuevos valores";
             case BAJA:      return "Ingresá el ID del producto a eliminar";
+            case BAJA_BUSCAR: return "Buscá el producto a eliminar por nombre o por ID";
             case BUSCAR:    return "Ingresá el ID del producto a consultar";
 
             case BUSCAR_NOMBRE: return "Ingresá el nombre o parte de él";
