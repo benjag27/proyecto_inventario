@@ -54,7 +54,7 @@ Principios de la evolución:
 
 | # | Feature | Issue | Estado |
 |---|---|---|---|
-| 001 | **Dar de baja seguro** — búsqueda por nombre/ID y confirmación explícita del ID al eliminar | [#32](https://github.com/benjag27/proyecto_inventario/issues/32) | `backlog` |
+| 001 | **Dar de baja seguro** — búsqueda por nombre/ID y confirmación explícita del ID al eliminar | [#32](https://github.com/benjag27/proyecto_inventario/issues/32) | `done` · implementada y mergeada en `dev` |
 | 002 | **Códigos de barras** — opcionales y múltiples por producto; agregar y eliminar uno solo desde la modificación | [#33](https://github.com/benjag27/proyecto_inventario/issues/33) | `in-progress` (implementada en `dev`) |
 | 003 | **Transiciones suaves** — paso continuo entre Productos y sus operaciones sin corte seco (fade/deslizamiento, ~200–400 ms) ni salto de tamaño | [#35](https://github.com/benjag27/proyecto_inventario/issues/35) | `backlog` |
 | 004 | **Estética coherente de los formularios** — `ProductFormView` con cabecera del módulo, campos alineados, resultados presentables y tamaño de ventana estable en los 5 modos | [#36](https://github.com/benjag27/proyecto_inventario/issues/36) | `backlog` |
