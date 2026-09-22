@@ -2,6 +2,8 @@ package org.phora.presentation;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -69,11 +71,20 @@ public class SceneManager {
         stage.setScene(scene);
         stage.show();
 
-        FadeTransition fade = new FadeTransition(Duration.millis(250), scene.getRoot());
+        FadeTransition fade = new FadeTransition(Duration.millis(320), scene.getRoot());
         fade.setFromValue(0);
         fade.setToValue(1);
-        fade.setInterpolator(Interpolator.EASE_BOTH);
-        fade.play();
+        fade.setInterpolator(Interpolator.EASE_OUT);
+
+        ScaleTransition zoom = new ScaleTransition(Duration.millis(320), scene.getRoot());
+        zoom.setFromX(0.94);
+        zoom.setFromY(0.94);
+        zoom.setToX(1.0);
+        zoom.setToY(1.0);
+        zoom.setInterpolator(Interpolator.EASE_OUT);
+
+        ParallelTransition abrir = new ParallelTransition(scene.getRoot(), fade, zoom);
+        abrir.play();
     }
 
     private void lockSize(double width, double height) {
