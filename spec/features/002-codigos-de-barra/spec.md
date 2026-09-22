@@ -45,4 +45,5 @@ Como el código puede ser **múltiple** (1:N) y debe poder agregarse/eliminarse 
 
 ## Estado de implementación
 
-- [ ] Pendiente de aprobación del `spec.md` → pasar a `in-progress`.
+- [x] Spec aprobada → pasó a `in-progress`
+- [x] Implementada en `dev` (rama `feature/codigos-de-barra`) — pendiente de merge a `main` vía PR y cierre del issue #33

@@ -15,7 +15,7 @@
 | Feature | Issue | Estado |
 |---|---|---|
 | Feature-001 — **Dar de baja seguro**: búsqueda por nombre/ID y confirmación explícita del ID al eliminar | [#32](https://github.com/benjag27/proyecto_inventario/issues/32) | `backlog` · spec en `spec/features/001-baja-segura/` |
-| Feature-002 — **Códigos de barras**: opcionales y múltiples por producto; alta y modificación con agregar/quitar uno solo | [#33](https://github.com/benjag27/proyecto_inventario/issues/33) | `backlog` · spec en `spec/features/002-codigos-de-barra/` |
+| Feature-002 — **Códigos de barras**: opcionales y múltiples por producto; alta y modificación con agregar/quitar uno solo | [#33](https://github.com/benjag27/proyecto_inventario/issues/33) | `in-progress` · implementada en `dev` · spec en `spec/features/002-codigos-de-barra/` |
 | Feature-003 — **Transiciones suaves**: paso continuo entre Productos y sus operaciones sin corte seco ni salto de tamaño | [#35](https://github.com/benjag27/proyecto_inventario/issues/35) | `backlog` · spec en `spec/features/003-transiciones-suaves/` |
 | Feature-004 — **Estética coherente de los formularios**: `ProductFormView` con cabecera del módulo, campos alineados, resultados presentables y tamaño estable | [#36](https://github.com/benjag27/proyecto_inventario/issues/36) | `backlog` · spec en `spec/features/004-estetica-formularios/` |
 
@@ -29,6 +29,15 @@
 - [ADD] **Feature-002 documentada y versionada** con especificación completa (`spec/features/002-codigos-de-barra/` con `spec.md`, `plan.md` y `tasks.md`) e **issue creado en GitHub (#33)**; especifica códigos de barras opcionales y múltiples por producto (alta con cero o varios códigos, modificación con agregar/eliminar uno solo, unicidad); pendiente de implementación (flujo `feature/... → dev → main`)
 - [ADD] **Feature-003 documentada y versionada** con especificación completa (`spec/features/003-transiciones-suaves/`) e **issue creado en GitHub (#35)**; centraliza en `SceneManager.show(...)` una transición suave (fade/deslizamiento ~250 ms) para el paso Productos ↔ operaciones y evita el salto de tamaño de ventana (`sizeToScene`), a partir del análisis del corte seco actual y del re-escaleo por modo; pendiente de implementación
 - [ADD] **Feature-004 documentada y versionada** con especificación completa (`spec/features/004-estetica-formularios/`) e **issue creado en GitHub (#36)**; unifica la estética de los 5 modos de `ProductFormView` (cabecera del módulo en lugar de estilos de login, campos alineados, resultados de búsqueda presentables en vez de un `Label` multilínea, tamaño de ventana estable); colabora con la Feature-003; pendiente de implementación
+
+### Flujo de Productos — Feature-002: Códigos de barras (implementada, issue #33)
+- [ADD] Tabla `product_barcodes` (relación 1-N con `products`, `barcode UNIQUE`, `ON DELETE CASCADE`) auto-creada en `BsConfig.initDB()`; se habilita `PRAGMA foreign_keys = ON` por conexión para garantizar el borrado en cascada de los códigos al dar de baja un producto
+- [ADD] Entidad `Product` con lista inmutable de códigos de barras (`List<String>` en el builder + getter/setter); se agrega `setId` para el alta
+- [CHANGE] `ProductRepositoryImpl`: `add` y `update` pasan a transacciones (`setAutoCommit(false)` + `commit`) para persistir producto y códigos de forma atómica; `update` **sincroniza** la lista (agrega los códigos nuevos y borra los removidos, permitiendo eliminar uno solo); `findById`, `findAll` y `findByName` cargan los códigos de cada producto; un código duplicado entre productos se rechaza con mensaje "El código de barras ya está registrado en otro producto" (`IllegalArgumentException`)
+- [CHANGE] `AddProduct` y `UpdateProduct` reciben `List<String> barcodes` (normalización `trim`, descarte de vacíos y rechazo de duplicados en la misma lista) y reflejan los códigos en la descripción del `AuditLog`
+- [ADD] `ProductFormView`: editor de códigos de barras en alta y modificación (campo + "Agregar código" y una fila por código con botón para quitarlo individualmente); el bloque es opcional (puede quedar vacío) y se precarga con los códigos existentes al modificar; las búsquedas (por ID y por nombre) muestran los códigos en el detalle
+- [ADD] `ProductPanelView`: nueva columna "Códigos" en el listado del inventario
+- [ADD] Test `ProductBarcodeTest` (alta sin códigos, alta con varios, agregar un código, eliminar uno solo manteniendo el resto, unicidad entre productos y borrado en cascada)
 
 ### Organización del desarrollo (especificación orientada a IA)
 - [ADD] Estructura `spec/` para desarrollo orientado a IA: carpeta `constitution/` con los documentos de constitución del proyecto y carpeta `features/` para documentar cada feature futura (`NNN-nombre/` con `spec.md`, `plan.md` y `tasks.md`)

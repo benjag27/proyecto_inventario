@@ -1,5 +1,8 @@
 package org.phora.presentation;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -20,6 +23,7 @@ import javafx.scene.layout.VBox;
 import org.phora.domain.model.Product;
 import org.phora.infrastructure.AppContext;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,6 +106,9 @@ public class ProductFormView {
         TextField txtPrice = field("Precio");
         TextField txtStock = field("Stock inicial");
 
+        ObservableList<String> codes = FXCollections.observableArrayList();
+        VBox barcodeBox = barcodeEditor(List.of(), codes);
+
         Button btn = primaryButton("Agregar producto");
         btn.setOnAction(e -> {
             try {
@@ -109,12 +116,15 @@ public class ProductFormView {
                 double price = Double.parseDouble(txtPrice.getText().replace(",", "."));
                 int stock    = Integer.parseInt(txtStock.getText().trim());
 
-                context.getAddProductUseCase().execute(name, price, stock,"admin");
+                context.getAddProductUseCase().execute(name, price, stock, new ArrayList<>(codes), "admin");
 
                 showMessage("Producto agregado correctamente.", false);
                 txtName.clear();
                 txtPrice.clear();
                 txtStock.clear();
+                codes.clear();
+                barcodeBox.getChildren().clear();
+                barcodeBox.getChildren().add(barcodeEditor(List.of(), codes));
             } catch (NumberFormatException ex) {
                 showMessage("Precio y stock deben ser números válidos.", true);
             } catch (IllegalArgumentException ex) {
@@ -122,7 +132,7 @@ public class ProductFormView {
             }
         });
 
-        return new VBox(12, txtName, txtPrice, txtStock, btn);
+        return new VBox(12, txtName, txtPrice, txtStock, barcodeBox, btn);
     }
 
     // --- MODIFICAR ---
@@ -132,6 +142,10 @@ public class ProductFormView {
         TextField txtName  = field("Nuevo nombre");
         TextField txtPrice = field("Nuevo precio");
         TextField txtStock = field("Nuevo stock");
+
+        ObservableList<String> codes = FXCollections.observableArrayList();
+        List<String> initialCodes = prefill != null ? prefill.getBarcodes() : List.of();
+        VBox barcodeBox = barcodeEditor(initialCodes, codes);
 
         if (prefill != null) {
             txtId.setText(String.valueOf(prefill.getId()));
@@ -148,7 +162,7 @@ public class ProductFormView {
                 double price = Double.parseDouble(txtPrice.getText().replace(",", "."));
                 int stock    = Integer.parseInt(txtStock.getText().trim());
 
-                boolean updated = context.getUpdateProductUseCase().execute(name, price, stock, id,"admin");
+                boolean updated = context.getUpdateProductUseCase().execute(name, price, stock, new ArrayList<>(codes), id, "admin");
 
                 if (updated) {
                     showMessage("Producto actualizado correctamente.", false);
@@ -157,10 +171,12 @@ public class ProductFormView {
                 }
             } catch (NumberFormatException ex) {
                 showMessage("ID, precio y stock deben ser números válidos.", true);
+            } catch (IllegalArgumentException ex) {
+                showMessage(ex.getMessage(), true);
             }
         });
 
-        return new VBox(12, txtId, txtName, txtPrice, txtStock, btn);
+        return new VBox(12, txtId, txtName, txtPrice, txtStock, barcodeBox, btn);
     }
 
     // --- BAJA ---
@@ -316,7 +332,8 @@ public class ProductFormView {
                     showMessage(
                             "Nombre: " + p.getName() +
                                     " | Precio: $" + String.format("%.2f", p.getPrice()) +
-                                    " | Stock: " + p.getStock(),
+                                    " | Stock: " + p.getStock() +
+                                    " | Códigos: " + barcodesLabel(p),
                             false
                     );
                 } else {
@@ -343,6 +360,7 @@ public class ProductFormView {
                 result.forEach(p -> sb.append("ID: ").append(p.getId())
                         .append(" | ").append(p.getName())
                         .append(" | Stock: ").append(p.getStock())
+                        .append(" | Códigos: ").append(barcodesLabel(p))
                         .append("\n"));
                 showMessage(sb.toString().trim(), false);
             } else {
@@ -354,6 +372,71 @@ public class ProductFormView {
     }
 
     // --- Helpers ---
+
+    /**
+     * Editor de códigos de barras: campo + botón "Agregar" y lista de códigos
+     * con un botón de quitar por fila. Permite agregar varios u eliminar uno
+     * solo. Es opcional: la lista puede quedar vacía.
+     */
+    private VBox barcodeEditor(List<String> initial, ObservableList<String> codes) {
+        codes.setAll(initial);
+
+        Label lblCodes = new Label("Códigos de barras (opcional)");
+        lblCodes.getStyleClass().add("menu-subheader");
+
+        TextField txtCode = field("Código de barras");
+        Button btnAdd = primaryButton("Agregar código");
+        btnAdd.setPadding(new Insets(10, 14, 10, 14));
+
+        HBox addRow = new HBox(8, txtCode, btnAdd);
+        HBox.setHgrow(txtCode, Priority.ALWAYS);
+
+        VBox list = new VBox(6);
+        codes.addListener((ListChangeListener<? super String>) c -> renderBarcodes(codes, list));
+        renderBarcodes(codes, list);
+
+        btnAdd.setOnAction(e -> {
+            String code = txtCode.getText().trim();
+            if (code.isEmpty()) {
+                showMessage("Ingresá un código de barras.", true);
+                return;
+            }
+            if (codes.contains(code)) {
+                showMessage("El código ya fue agregado a la lista.", true);
+                return;
+            }
+            codes.add(code);
+            txtCode.clear();
+        });
+
+        return new VBox(6, lblCodes, addRow, list);
+    }
+
+    private void renderBarcodes(ObservableList<String> codes, VBox list) {
+        list.getChildren().clear();
+        if (codes.isEmpty()) {
+            Label empty = new Label("Sin códigos.");
+            empty.getStyleClass().add("menu-subheader");
+            list.getChildren().add(empty);
+            return;
+        }
+        for (String code : codes) {
+            Label lbl = new Label(code);
+            lbl.getStyleClass().add("login-subtitle");
+            Button btnRemove = new Button("✖");
+            btnRemove.getStyleClass().add("btn-primary");
+            btnRemove.setPrefWidth(40);
+            HBox row = new HBox(10, lbl, btnRemove);
+            HBox.setHgrow(lbl, Priority.ALWAYS);
+            row.setAlignment(Pos.CENTER_LEFT);
+            btnRemove.setOnAction(ev -> codes.remove(code));
+            list.getChildren().add(row);
+        }
+    }
+
+    private String barcodesLabel(Product p) {
+        return p.getBarcodes().isEmpty() ? "-" : String.join(", ", p.getBarcodes());
+    }
 
     private TextField field(String prompt) {
         TextField f = new TextField();
