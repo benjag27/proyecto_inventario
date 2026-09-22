@@ -16,7 +16,7 @@
 - [ADD] Convenio normativo: todo cambio relevante futuro se registra en este archivo `CHANGELOG.md` con formato `[TIPO] Descripción`
 - [ADD] Racional de escalabilidad de la arquitectura por capas: las interfaces de repositorio (`domain/repository/`) son el punto de extensión para migrar la infraestructura de datos (SQLite local → base de datos en la nube) sin tocar la lógica de negocio (`domain` / `application`)
 - [ADD] Visión de evolución definida en `spec/constitution/roadmap.md`: (A) despliegue local embebido actual, (B) versión con base de datos en la nube no dependiente del archivo local, (C) multiusuario con concurrencia y consistencia de datos (transacciones, resolución de conflictos, roles)
-- [CHANGE] Decisión de arquitectura de datos (pendiente de implementar): el `inventario.db` debe migrar de la ruta relativa (`jdbc:sqlite:inventario.db` en `BsConfig.java`) a la carpeta de datos del usuario (`Documents/Phora/`), para soportar instalación en Windows (`Program Files` sin permisos de escritura) y sobrevivir a reinstalaciones y actualizaciones
+- [CHANGE] Decisión de arquitectura de datos (pendiente de implementar): el `inventario.db` debe migrar de la ruta relativa (`jdbc:sqlite:inventario.db` en `BsConfig.java`) a una carpeta oculta dentro del home del usuario (`~/.phora_inventario/`), para soportar instalación en Windows (`Program Files` sin permisos de escritura), sobrevivir a reinstalaciones y actualizaciones, y evitar sobrescrituras de datos durante sincronizaciones del código
 
 ### Arquitectura base
 - [ADD] Definición de arquitectura formal en 4 capas desacopladas: `domain`, `application`, `infrastructure`, `presentation`

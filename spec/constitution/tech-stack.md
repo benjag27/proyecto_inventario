@@ -19,7 +19,7 @@
 - **Ciclo de vida:** las tablas se auto-crean con `CREATE TABLE IF NOT EXISTS` al arrancar (`BsConfig.initDB()`).
 
 ### Ruta del archivo de base de datos
-- **Target (definido):** el `inventario.db` se crea en la **carpeta de datos del usuario** → `Documents/Phora/inventario.db` (Windows) / `~/Documents/Phora/` (Linux). Se calcula dinámicamente según el SO.
+- **Target (definido):** el `inventario.db` se crea en una **carpeta oculta dentro del home del usuario** → `~/.phora_inventario/inventario.db` (Linux/macOS) y `%USERPROFILE%\.phora_inventario\inventario.db` (Windows). Se calcula dinámicamente según el SO previa creación del directorio. **Criterio de aislamiento:** evitar sobrescrituras de datos durante sincronizaciones/actualizaciones del código, según README.
 - **Estado actual (pendiente de código):** hoy `BsConfig.java:25` usa la ruta relativa `jdbc:sqlite:inventario.db`, que crea el archivo **junto al ejecutable**. Esto es problemático en Windows (sin permiso de escritura en `Program Files`) y pierde datos al reinstalar. **Pendiente: migrar `BsConfig` a la carpeta de datos del usuario.**
 - **Por qué carpeta de usuario:** sobrevive a reinstalaciones/actualizaciones del programa y es visible y fácil de copiar para el dueño del negocio (respaldo manual).
 

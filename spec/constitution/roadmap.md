@@ -57,7 +57,7 @@ Pendiente técnico conocido (no es una feature, es deuda de configuración):
 
 | Item | Estado |
 |---|---|
-| Mover `inventario.db` de la ruta relativa (`BsConfig.java:25`) a la carpeta de datos del usuario (`Documents/Phora/`) | pendiente |
+| Mover `inventario.db` de la ruta relativa (`BsConfig.java:25`) a la carpeta oculta del home del usuario (`~/.phora_inventario/`) | pendiente |
 
 ## Reglas de este documento
 
