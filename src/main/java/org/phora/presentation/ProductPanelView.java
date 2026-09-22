@@ -1,5 +1,6 @@
 package org.phora.presentation;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -120,8 +121,17 @@ public class ProductPanelView {
         colStock.setPrefWidth(100);
         colStock.setStyle("-fx-alignment: CENTER;");
 
+        TableColumn<Product, String> colBarcodes = new TableColumn<>("Códigos");
+        colBarcodes.setCellValueFactory(data -> {
+            if (data.getValue() == null || data.getValue().getBarcodes().isEmpty()) {
+                return new SimpleStringProperty("-");
+            }
+            return new SimpleStringProperty(String.join(", ", data.getValue().getBarcodes()));
+        });
+        colBarcodes.setPrefWidth(260);
+
         TableView<Product> table = new TableView<>(productList);
-        table.getColumns().addAll(colId, colName, colPrice, colStock);
+        table.getColumns().addAll(colId, colName, colPrice, colStock, colBarcodes);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.setPlaceholder(new Label("No se encontraron productos."));
         table.setStyle("-fx-background-color: #2a3038; -fx-text-fill: #f4f6f8;");

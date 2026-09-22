@@ -39,7 +39,12 @@ public class BsConfig {
 
     public static Connection getConnection() {
         try {
-            return DriverManager.getConnection(URL);
+            Connection conn = DriverManager.getConnection(URL);
+            // Habilita las claves foráneas (PRAGMA es por conexión en SQLite).
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute("PRAGMA foreign_keys = ON");
+            }
+            return conn;
         } catch (SQLException e) {
             logger.info("Error en getConnection(): " + e.getMessage());
             throw new RuntimeException("No se pudo conectar a la base de datos", e);
@@ -83,11 +88,20 @@ public class BsConfig {
             );
             """;
 
+        String createProductBarcodes = """
+            CREATE TABLE IF NOT EXISTS product_barcodes (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+                barcode    TEXT    NOT NULL UNIQUE
+            );
+            """;
+
         try (Connection conn = DriverManager.getConnection(URL);
                 Statement stmt = conn.createStatement()) {
             stmt.execute(createProducts);
             stmt.execute(createUsers);
             stmt.execute(createAuditLogs);
+            stmt.execute(createProductBarcodes);
         } catch (SQLException e) {
             throw new RuntimeException("Error al inicializar la base de datos", e);
         }
