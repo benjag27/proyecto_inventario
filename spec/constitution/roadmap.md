@@ -13,7 +13,8 @@ Toda feature nueva sigue su carpeta en `spec/features/NNN-nombre/`:
 Reglas:
 - Una feature solo pasa a `in-progress` cuando su `spec.md` está aprobado.
 - Todo cambio se registra en `CHANGELOG.md` (`[TIPO]`).
-- Todo desarrollo sigue el flujo de ramas del `Manual.md` (`feature/nombre-de-la-tarea` → `dev` → `main`).
+- Todo desarrollo sigue el flujo de ramas del `Manual.md` (**rama propia por feature** `feature/nombre-de-la-tarea` o `docs/...` → **pull request contra `dev`** → **el revisor aprueba y hace el merge** → el revisor **decide `dev` → `main`**).
+- **Nada de push directo a `dev`/`main`**: cada cambio vive en su rama hasta que el revisor lo apruebe.
 
 ## Estado actual (respaldado por el CHANGELOG)
 
