@@ -2,8 +2,13 @@ package org.phora.presentation;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.animation.ParallelTransition;
+import javafx.animation.Timeline;
 import javafx.animation.ScaleTransition;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -23,26 +28,20 @@ public class SceneManager {
 
     public void showLogin() {
         LoginView loginView = new LoginView(context.getLoginServiceUseCase(), this);
-        freeSize();
-        show(loginView.createScene(), "Inventario — Iniciar sesión");
-        lockSize(LoginView.WIDTH, LoginView.HEIGHT);
-        stage.centerOnScreen();
+        showConTamano(loginView.createScene(), "Inventario — Iniciar sesión",
+                LoginView.WIDTH, LoginView.HEIGHT);
     }
 
     public void showMainMenu() {
         MainMenuView menuView = new MainMenuView(context, this);
-        freeSize();
-        show(menuView.createScene(), "Inventario — Panel principal");
-        lockSize(MainMenuView.WIDTH, MainMenuView.HEIGHT);
-        stage.centerOnScreen();
+        showConTamano(menuView.createScene(), "Inventario — Panel principal",
+                MainMenuView.WIDTH, MainMenuView.HEIGHT);
     }
 
     public void showProductPanel() {
         ProductPanelView panelView = new ProductPanelView(context, this);
-        freeSize();
-        show(panelView.createScene(), "Inventario — Productos");
-        lockSize(ProductPanelView.WIDTH, ProductPanelView.HEIGHT);
-        stage.centerOnScreen();
+        showConTamano(panelView.createScene(), "Inventario — Productos",
+                ProductPanelView.WIDTH, ProductPanelView.HEIGHT);
     }
 
     public void showProductForm(ProductFormView.Modo modo) {
@@ -51,19 +50,15 @@ public class SceneManager {
 
     public void showProductForm(ProductFormView.Modo modo, Product prefill) {
         ProductFormView formView = new ProductFormView(context, this, modo, prefill);
-        freeSize();
-        show(formView.createScene(), "Inventario — Productos");
-        stage.sizeToScene();
-        lockSize(stage.getWidth(), stage.getHeight());
-        stage.centerOnScreen();
+        Scene formScene = formView.createScene();
+        showConTamano(formScene, "Inventario — Productos",
+                formScene.getRoot().prefWidth(-1), formScene.getRoot().prefHeight(-1));
     }
 
     public void showAuditLogMenu() {
         AuditLogView auditLogView = new AuditLogView(context, this);
-        freeSize();
-        show(auditLogView.createScene(), "Inventario — Historial de Movimientos");
-        lockSize(MainMenuView.WIDTH, MainMenuView.HEIGHT);
-        stage.centerOnScreen();
+        showConTamano(auditLogView.createScene(), "Inventario — Historial de Movimientos",
+                MainMenuView.WIDTH, MainMenuView.HEIGHT);
     }
 
     private void show(Scene scene, String titulo) {
@@ -73,20 +68,72 @@ public class SceneManager {
         stage.setScene(scene);
         stage.show();
 
-        FadeTransition fade = new FadeTransition(Duration.millis(320), scene.getRoot());
+        FadeTransition fade = new FadeTransition(Duration.millis(520), scene.getRoot());
         fade.setFromValue(0);
         fade.setToValue(1);
         fade.setInterpolator(Interpolator.EASE_OUT);
 
         ScaleTransition zoom = new ScaleTransition(Duration.millis(320), scene.getRoot());
-        zoom.setFromX(0.94);
-        zoom.setFromY(0.94);
+        zoom.setFromX(0.97);
+        zoom.setFromY(0.97);
         zoom.setToX(1.0);
         zoom.setToY(1.0);
         zoom.setInterpolator(Interpolator.EASE_OUT);
 
         ParallelTransition abrir = new ParallelTransition(scene.getRoot(), fade, zoom);
         abrir.play();
+    }
+
+    public void showConTamano(Scene scene, String titulo, double destinoW, double destinoH) {
+        freeSize();
+        stage.setTitle(titulo);
+        scene.getRoot().setOpacity(0);
+        scene.setFill(Color.web("#1e2329"));
+        stage.setScene(scene);
+        stage.show();
+
+        FadeTransition fade = new FadeTransition(Duration.millis(520), scene.getRoot());
+        fade.setFromValue(0);
+        fade.setToValue(1);
+        fade.setInterpolator(Interpolator.EASE_OUT);
+
+        ScaleTransition zoom = new ScaleTransition(Duration.millis(520), scene.getRoot());
+        zoom.setFromX(0.97);
+        zoom.setFromY(0.97);
+        zoom.setToX(1.0);
+        zoom.setToY(1.0);
+        zoom.setInterpolator(Interpolator.EASE_OUT);
+
+        ParallelTransition abrir = new ParallelTransition(scene.getRoot(), fade, zoom);
+        abrir.play();
+
+        if (Math.abs(destinoW - stage.getWidth()) > 1 || Math.abs(destinoH - stage.getHeight()) > 1) {
+            animateResizeTo(destinoW, destinoH);
+        } else {
+            lockSize(destinoW, destinoH);
+            stage.centerOnScreen();
+        }
+    }
+
+    private void animateResizeTo(double destinoW, double destinoH) {
+        double inicioW = stage.getWidth();
+        double inicioH = stage.getHeight();
+        DoubleProperty ancho = new SimpleDoubleProperty(inicioW);
+        DoubleProperty alto = new SimpleDoubleProperty(inicioH);
+        ancho.addListener((obs, o, n) -> stage.setWidth(n.doubleValue()));
+        alto.addListener((obs, o, n) -> stage.setHeight(n.doubleValue()));
+        Timeline resize = new Timeline(
+                new KeyFrame(Duration.ZERO,
+                        new KeyValue(ancho, inicioW, Interpolator.EASE_OUT),
+                        new KeyValue(alto, inicioH, Interpolator.EASE_OUT)),
+                new KeyFrame(Duration.millis(620),
+                        new KeyValue(ancho, destinoW, Interpolator.EASE_OUT),
+                        new KeyValue(alto, destinoH, Interpolator.EASE_OUT)));
+        resize.setOnFinished(e -> {
+            lockSize(destinoW, destinoH);
+            stage.centerOnScreen();
+        });
+        resize.play();
     }
 
     private void lockSize(double width, double height) {
