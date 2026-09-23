@@ -2,13 +2,8 @@ package org.phora.presentation;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
 import javafx.animation.ParallelTransition;
-import javafx.animation.Timeline;
 import javafx.animation.ScaleTransition;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -107,33 +102,11 @@ public class SceneManager {
         ParallelTransition abrir = new ParallelTransition(scene.getRoot(), fade, zoom);
         abrir.play();
 
-        if (Math.abs(destinoW - stage.getWidth()) > 1 || Math.abs(destinoH - stage.getHeight()) > 1) {
-            animateResizeTo(destinoW, destinoH);
-        } else {
-            lockSize(destinoW, destinoH);
-            stage.centerOnScreen();
-        }
-    }
-
-    private void animateResizeTo(double destinoW, double destinoH) {
-        double inicioW = stage.getWidth();
-        double inicioH = stage.getHeight();
-        DoubleProperty ancho = new SimpleDoubleProperty(inicioW);
-        DoubleProperty alto = new SimpleDoubleProperty(inicioH);
-        ancho.addListener((obs, o, n) -> stage.setWidth(n.doubleValue()));
-        alto.addListener((obs, o, n) -> stage.setHeight(n.doubleValue()));
-        Timeline resize = new Timeline(
-                new KeyFrame(Duration.ZERO,
-                        new KeyValue(ancho, inicioW, Interpolator.EASE_OUT),
-                        new KeyValue(alto, inicioH, Interpolator.EASE_OUT)),
-                new KeyFrame(Duration.millis(620),
-                        new KeyValue(ancho, destinoW, Interpolator.EASE_OUT),
-                        new KeyValue(alto, destinoH, Interpolator.EASE_OUT)));
-        resize.setOnFinished(e -> {
-            lockSize(destinoW, destinoH);
-            stage.centerOnScreen();
-        });
-        resize.play();
+        /* OTRA forma optimizada: sizeToScene() ajusta el Stage al tamaño EXACTO que el
+           contenido necesita (JavaFX lo computa solo, nunca se corta) y recién ahí lockSize */
+        stage.sizeToScene();
+        lockSize(stage.getWidth(), stage.getHeight());
+        stage.centerOnScreen();
     }
 
     private void lockSize(double width, double height) {
