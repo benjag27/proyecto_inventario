@@ -29,6 +29,15 @@ public class SceneManager {
         stage.centerOnScreen();
     }
 
+    public void showChangePassword(String username) {
+        ChangePasswordView changePasswordView =
+                new ChangePasswordView(context.getLoginServiceUseCase(), this, username);
+        freeSize();
+        show(changePasswordView.createScene(), "Inventario — Cambiar contraseña");
+        lockSize(ChangePasswordView.WIDTH, ChangePasswordView.HEIGHT);
+        stage.centerOnScreen();
+    }
+
     public void showMainMenu() {
         MainMenuView menuView = new MainMenuView(context, this);
         freeSize();
