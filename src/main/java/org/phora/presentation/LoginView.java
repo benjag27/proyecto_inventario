@@ -91,7 +91,11 @@ public class LoginView {
     boolean valido = loginService.authenticate(username, password);
 
     if (valido) {
-      sceneManager.showMainMenu();
+      if (loginService.mustChangePassword(username)) {
+        sceneManager.showChangePassword(username);
+      } else {
+        sceneManager.showMainMenu();
+      }
     } else {
       showError("Usuario o contraseña incorrectos.");
     }
