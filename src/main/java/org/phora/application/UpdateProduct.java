@@ -4,6 +4,7 @@ import org.phora.domain.model.Product;
 import org.phora.domain.repository.ProductRepository;
 import org.phora.domain.service.AuditLogService;
 
+import java.util.List;
 import java.util.Optional;
 
 public class UpdateProduct {
@@ -16,17 +17,21 @@ public class UpdateProduct {
         this.auditLogService = auditLogService;
     }
 
-    public boolean execute(String name, double price, int stock, int id,String activeUser) {
+    public boolean execute(String name, double price, int stock, List<String> barcodes, int id, String activeUser) {
         Optional<Product> p = productRepository.findById(id);
         if (p.isEmpty()) return false;
+
+        List<String> normalized = AddProduct.normalizeBarcodes(barcodes);
 
         Product product = p.get();
         product.setName(name);
         product.setPrice(price);
         product.setStock(stock);
+        product.setBarcodes(normalized);
 
         productRepository.update(product);
-        String desc = "Se registró el cambio en el  producto: " + product.getName() + " (Precio: $" + product.getPrice() + " | Stock Inicial: " + product.getStock() + ")";
+        String codes = normalized.isEmpty() ? "sin códigos" : "Códigos: " + String.join(", ", normalized);
+        String desc = "Se registró el cambio en el  producto: " + product.getName() + " (Precio: $" + product.getPrice() + " | Stock Inicial: " + product.getStock() + " | " + codes + ")";
         auditLogService.logAction(activeUser, "CREATE", desc);
         return true;
     }

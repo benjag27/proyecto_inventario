@@ -13,7 +13,8 @@ Toda feature nueva sigue su carpeta en `spec/features/NNN-nombre/`:
 Reglas:
 - Una feature solo pasa a `in-progress` cuando su `spec.md` está aprobado.
 - Todo cambio se registra en `CHANGELOG.md` (`[TIPO]`).
-- Todo desarrollo sigue el flujo de ramas del `Manual.md` (`feature/nombre-de-la-tarea` → `dev` → `main`).
+- Todo desarrollo sigue el flujo de ramas del `Manual.md` (**rama propia por feature** `feature/nombre-de-la-tarea` o `docs/...` → **pull request contra `dev`** → **el revisor aprueba y hace el merge** → el revisor **decide `dev` → `main`**).
+- **Nada de push directo a `dev`/`main`**: cada cambio vive en su rama hasta que el revisor lo apruebe.
 
 ## Estado actual (respaldado por el CHANGELOG)
 
@@ -54,7 +55,10 @@ Principios de la evolución:
 
 | # | Feature | Issue | Estado |
 |---|---|---|---|
-| 001 | **Dar de baja seguro** — búsqueda por nombre/ID y confirmación explícita del ID al eliminar | [#32](https://github.com/benjag27/proyecto_inventario/issues/32) | `backlog` |
+| 001 | **Dar de baja seguro** — búsqueda por nombre/ID y confirmación explícita del ID al eliminar | [#32](https://github.com/benjag27/proyecto_inventario/issues/32) | `done` · implementada y mergeada en `dev` |
+| 002 | **Códigos de barras** — opcionales y múltiples por producto; agregar y eliminar uno solo desde la modificación | [#33](https://github.com/benjag27/proyecto_inventario/issues/33) | `in-progress` (implementada en `dev`) |
+| 003 | **Transiciones suaves** — paso continuo entre Productos y sus operaciones sin corte seco (fade/deslizamiento, ~200–400 ms) ni salto de tamaño | [#35](https://github.com/benjag27/proyecto_inventario/issues/35) | `done` · fade-in (~250 ms) centralizado en `SceneManager.show` |
+| 004 | **Estética coherente de los formularios** — `ProductFormView` con cabecera del módulo, campos alineados, resultados presentables y tamaño de ventana estable en los 5 modos | [#36](https://github.com/benjag27/proyecto_inventario/issues/36) | `done` · cabecera del módulo (`menu-header`) en `createScene` |
 
 Pendiente técnico conocido (no es una feature, es deuda de configuración):
 
