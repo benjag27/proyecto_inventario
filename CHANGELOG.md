@@ -68,6 +68,7 @@
 - [CHANGE] Flujo de ramas operativo definido en `Manual.md`: `main` queda reservado como rama de **distribución** (solo releases e instaladores, prohibido push directo); `dev` pasa a ser la rama de **producción activa** donde trabaja el equipo (base de `feature/*`, integración del día a día)
 - [ADD] Estado actual del producto (estructura `spec/`, documentación, fix de bootstrap de login y ruta de BD) sincronizado en la rama `dev` del remoto (`origin/dev`) para desarrollo colaborativo
 - [CHANGE] **Flujo de integración unificado (Pull Request):** se alinea `Manual.md` con `roadmap.md`. Se descarta el `git merge` local + `git push origin dev` (sección 3 del Manual) y queda como flujo oficial: `feature/...` → Push de la rama → **PR contra `dev`** → el **revisor** aprueba y mergea → el revisor decide `dev` → `main`. **Prohibido el push directo a `dev`/`main`.**
+- [CHANGE] **Backlog del `roadmap.md` depurado:** se elimina la tabla de features del backlog (001–005 ya estaban implementadas). Las features hechas no se duplican en el roadmap: su historial vive en este `CHANGELOG.md` y en los commits. El backlog queda reservado para features **pendientes** de planificar.
 
 ### Flujo de Productos (interfaz)
 - [CHANGE] Flujo del módulo Productos: al abrir **Productos** se muestra directamente el **listado del inventario** (buscador en vivo por nombre + contador) y las operaciones (**dar de alta, modificar, dar de baja, buscar por ID, buscar por nombre**) como **botones en un panel lateral**
