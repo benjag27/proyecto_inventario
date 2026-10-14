@@ -51,15 +51,9 @@ Principios de la evolución:
 
 ## Backlog de features
 
-> Las features se definen aquí con su estado y su issue en GitHub. Cada una tiene su carpeta en `spec/features/NNN-nombre/`.
+> Las features se planifican y ordenan aquí **antes** de implementarse. Una vez implementadas **no se listan**: su historial vive en `CHANGELOG.md` y en los commits, y cada una deja su carpeta en `spec/features/NNN-nombre/` (por ejemplo, `spec/features/005-login-normalizado/`).
 
-| # | Feature | Issue | Estado |
-|---|---|---|---|
-| 001 | **Dar de baja seguro** — búsqueda por nombre/ID y confirmación explícita del ID al eliminar | [#32](https://github.com/benjag27/proyecto_inventario/issues/32) | `done` · implementada y mergeada en `dev` |
-| 002 | **Códigos de barras** — opcionales y múltiples por producto; agregar y eliminar uno solo desde la modificación | [#33](https://github.com/benjag27/proyecto_inventario/issues/33) | `in-progress` (implementada en `dev`) |
-| 003 | **Transiciones suaves** — paso continuo entre Productos y sus operaciones sin corte seco (fade/deslizamiento, ~200–400 ms) ni salto de tamaño | [#35](https://github.com/benjag27/proyecto_inventario/issues/35) | `done` · fade-in (~250 ms) centralizado en `SceneManager.show` |
-| 004 | **Estética coherente de los formularios** — `ProductFormView` con cabecera del módulo, campos alineados, resultados presentables y tamaño de ventana estable en los 5 modos | [#36](https://github.com/benjag27/proyecto_inventario/issues/36) | `done` · cabecera del módulo (`menu-header`) en `createScene` |
-| 005 | **Login tolerante a espacios** — normalización (`trim`) del usuario en `LoginService` (`authenticate`, `mustChangePassword`, `changePassword`) | [#42](https://github.com/benjag27/proyecto_inventario/issues/42) | `done` · implementado en `dev` (commit `3c29ae2`) |
+**Backlog actual: vacío** (no hay features pendientes de planificar).
 
 Pendiente técnico conocido (no es una feature, es deuda de configuración):
 
