@@ -16,7 +16,7 @@ El repositorio se divide en tres niveles jerárquicos de aislamiento. Queda proh
 ###  Rama `dev` (Producción activa / Integración)
 * **Propósito:** rama de **producción activa**. Es la base de trabajo del equipo (donde se desarrolla junto al/os compañero/s). Concentra las funciones y pantallas recientemente finalizadas para comprobar su interacción mutua.
 * **Normativa:** es la rama base del día a día: se parte de ella para crear `feature/*` y refleja el estado actual del desarrollo. El estado del producto (incluidos los fixes, como el de bootstrap de login) vive aquí.
-* **Sincronización:** el equipo debe `git pull origin dev` antes de cada tarea y `git push origin dev` al integrar (ver secciones 2 y 3).
+* **Sincronización:** el equipo debe `git pull origin dev` antes de cada tarea. La integración **no** se hace con `git push origin dev`: todo cambio entra por **Pull Request revisado** (ver secciones 2 y 3).
 
 ###  Ramas `feature/` (Desarrollo Especializado)
 * **Propósito:** Aislar la codificación de una única tarea o Issue específica (ej: `feature/busqueda-nombre`, `feature/alerta-stock`).
@@ -53,55 +53,43 @@ git commit -m "Descripción técnica y concisa del cambio realizado"
 git push origin feature/nombre-de-la-tarea
 ```
 
-## 3. PROTOCOLO DE FUSIÓN Y CIERRE DE TAREA
+## 3. PROTOCOLO DE REVISIÓN Y FUSIÓN (PULL REQUEST)
 
-Una vez que la funcionalidad esté completada, verifique que compile localmente de forma exitosa y proceda a integrar el código a la línea principal siguiendo estos pasos:
-###  Paso 1: Regresar a la rama de integración
+Una vez que la funcionalidad esté completada, verifique que **compile** y que los **tests pasen** localmente. La integración se hace por **Pull Request revisado**: **nunca** se hace `git push` directo a `dev` ni a `main`; cada cambio vive en su rama hasta que el revisor lo apruebe.
 
-Cambie el espacio de trabajo local a la rama de desarrollo principal:
+### Paso 1: Abrir el Pull Request
 
+Con la rama `feature/...` ya subida a GitHub (ver sección 2, Paso 3), abra un Pull Request cuya **rama base sea `dev`** y cuya rama de comparación sea su rama de trabajo:
 
+```
+gh pr create --base dev --head feature/nombre-de-la-tarea --title "feat: descripción corta del cambio" --body "Qué hace, cómo se verificó (tests) y a qué issue cierra"
+```
+
+### Paso 2: Revisión por parte del revisor
+
+El **revisor** (administrador del proyecto) revisa el Pull Request. Si hay observaciones, se corrigen agregando **nuevos commits en la misma rama** y el PR se actualiza solo. **Ningún integrante mergea su propio Pull Request.**
+
+### Paso 3: Fusión autorizada
+
+Aprobado el PR, **el revisor lo mergea a `dev`** (desde la interfaz de GitHub o con la CLI). Así `dev` solo recibe código ya revisado:
+
+```
+gh pr merge --merge
+```
+
+_Nota: Si GitHub detecta conflictos, detenga la fusión y resuélvalos en la rama antes de continuar._
+
+### Paso 4: Sincronizar y depurar
+
+Actualice su copia local y elimine la rama de trabajo (local y remota) para mantener limpio el historial visual del repositorio:
 
 ```
 git checkout dev
-```
-
-### Paso 2: Absorber actualizaciones remotas de terceros
-
-Evite conflictos de código trayendo lo que otros desarrolladores hayan subido al servidor remoto mientras usted trabajaba en su celda aislada:
-
-
-
-```
 git pull origin dev
-```
-
-### Paso 3: Ejecutar la fusión
-
-Incorpore los cambios de su tarea terminada dentro de la rama `dev`:
-
-
-```
-git merge feature/nombre-de-la-tarea
-```
-
-_Nota: Si Git detecta conflictos de código, detenga el proceso y resuélvalos manualmente en el editor junto al administrador antes de continuar._
-
-### Paso 4: Publicar la integración en el servidor
-
-Envíe el resultado final unificado a GitHub para que esté disponible para el resto del equipo:
-
-
-```
-git push origin dev
-```
-
-### Paso 5: Depurar el árbol de ramas
-
-Elimine la rama `feature` local y remotamente para mantener limpio el historial visual del repositorio:
-
-
-```
 git branch -d feature/nombre-de-la-tarea
 git push origin --delete feature/nombre-de-la-tarea
 ```
+
+### Paso 5: Promoción a `main` (release)
+
+El paso de `dev` a `main` lo decide **exclusivamente el revisor**, mediante un Pull Request de `dev` hacia `main`, cuando el ciclo de desarrollo esté cerrado y estable. `main` solo aloja versiones listas para generar los instaladores oficiales.
