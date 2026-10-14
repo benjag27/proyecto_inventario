@@ -30,6 +30,9 @@
 - [ADD] **Feature-003 documentada y versionada** con especificación completa (`spec/features/003-transiciones-suaves/`) e **issue creado en GitHub (#35)**; centraliza en `SceneManager.show(...)` una transición suave (fade/deslizamiento ~250 ms) para el paso Productos ↔ operaciones y evita el salto de tamaño de ventana (`sizeToScene`), a partir del análisis del corte seco actual y del re-escaleo por modo; pendiente de implementación
 - [ADD] **Feature-004 documentada y versionada** con especificación completa (`spec/features/004-estetica-formularios/`) e **issue creado en GitHub (#36)**; unifica la estética de los 5 modos de `ProductFormView` (cabecera del módulo en lugar de estilos de login, campos alineados, resultados de búsqueda presentables en vez de un `Label` multilínea, tamaño de ventana estable); colabora con la Feature-003; pendiente de implementación
 
+### Correcciones (fixes)
+- [FIX] `LoginService`: se normaliza el nombre de usuario con `trim()` en `authenticate`, `mustChangePassword` y `changePassword` (helper `normalizeUsername`), y se agregan guardas de `null`; un espacio accidental al inicio o fin impedía el ingreso (`WHERE username = 'admin '` nunca coincide con `admin`) y, además, podía omitir la pantalla de cambio obligatorio de contraseña
+
 ### Flujo de Productos — Feature-002: Códigos de barras (implementada, issue #33)
 - [ADD] Tabla `product_barcodes` (relación 1-N con `products`, `barcode UNIQUE`, `ON DELETE CASCADE`) auto-creada en `BsConfig.initDB()`; se habilita `PRAGMA foreign_keys = ON` por conexión para garantizar el borrado en cascada de los códigos al dar de baja un producto
 - [ADD] Entidad `Product` con lista inmutable de códigos de barras (`List<String>` en el builder + getter/setter); se agrega `setId` para el alta

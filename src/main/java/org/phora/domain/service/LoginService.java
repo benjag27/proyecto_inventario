@@ -10,12 +10,10 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 public class LoginService {
 
   private final UserRepository userRepository;
-  private static final Logger logger = Logger.getLogger(LoginService.class.getName());
 
   // Parámetros de seguridad estándar (NIST)
   private static final int ITERATIONS = 65536;
@@ -26,13 +24,21 @@ public class LoginService {
     this.userRepository = userRepository;
   }
 
-  public boolean authenticate(String username, String rawPassword) {
-    logger.info("=== INTENTO DE LOGIN DETECTADO ===");
-    logger.info("Usuario recibido desde pantalla: '" + username + "'");
-    logger.info("Contraseña recibida desde pantalla: '" + rawPassword + "'");
-    // ============================
+  /**
+   * Normaliza el nombre de usuario: descarta espacios accidentales al inicio o
+   * al fin (un "admin " no debe ser tratado distinto de "admin").
+   */
+  private static String normalizeUsername(String username) {
+    return username == null ? null : username.trim();
+  }
 
-    Optional<User> userOptional = userRepository.findByUsername(username);
+  public boolean authenticate(String username, String rawPassword) {
+    String normalizedUsername = normalizeUsername(username);
+    if (normalizedUsername == null || rawPassword == null) {
+      return false;
+    }
+
+    Optional<User> userOptional = userRepository.findByUsername(normalizedUsername);
 
     if (userOptional.isEmpty()) {
       return false;
@@ -40,8 +46,34 @@ public class LoginService {
 
     User user = userOptional.get();
 
-
     return verifyPassword(rawPassword, user.getPasswordHash());
+  }
+
+  /**
+   * Indica si el usuario debe cambiar su contraseña en el próximo inicio
+   * de sesión (usuarios recién sembrados en la instalación base).
+   */
+  public boolean mustChangePassword(String username) {
+    String normalizedUsername = normalizeUsername(username);
+    if (normalizedUsername == null) {
+      return false;
+    }
+    return userRepository.findByUsername(normalizedUsername)
+            .map(User::isMustChangePassword)
+            .orElse(false);
+  }
+
+  /**
+   * Reemplaza la contraseña del usuario y limpia la marca de cambio pendiente.
+   * Devuelve false si la nueva contraseña no cumple la longitud mínima.
+   */
+  public boolean changePassword(String username, String rawPassword) {
+    String normalizedUsername = normalizeUsername(username);
+    if (normalizedUsername == null || rawPassword == null || rawPassword.length() < 6) {
+      return false;
+    }
+    userRepository.updatePassword(normalizedUsername, hashPassword(rawPassword), false);
+    return true;
   }
 
   /**
@@ -81,7 +113,6 @@ public class LoginService {
       }
       return diff == 0;
     } catch (Exception e) {
-      e.printStackTrace(); // Esto te ayudará a ver en consola si salta un error de parseo
       return false;
     }
   }

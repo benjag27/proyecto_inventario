@@ -1,11 +1,13 @@
 package org.phora.infrastructure.persistence;
 
-import org.phora.domain.service.LoginService;
-
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -18,6 +20,11 @@ import java.util.logging.Logger;
  * donde se ejecute la app, evitando sobrescrituras por sincronizaciones o
  * actualizaciones, y soportando instalaciones con permisos restringidos
  * (ej: Program Files en Windows). No requiere instalación de ningún servidor.
+ *
+ * En la primera ejecución no se crea ni se siembra nada por código: se copia
+ * la base pre-sembrada que viaja como recurso (/db/inventario_base.db), que ya
+ * incluye el esquema completo y el usuario administrador. Así el código de
+ * distribución no contiene credenciales ni lógica de seed.
  */
 public class BsConfig {
 
@@ -25,12 +32,9 @@ public class BsConfig {
     private static final String DB_DIR = System.getProperty("user.home")
             + File.separator + ".phora_inventario";
     private static final String DB_FILE = "inventario.db";
+    private static final String BASE_DB_RESOURCE = "/db/inventario_base.db";
     private static final String URL;
-    private static final Logger logger = Logger.getLogger(LoginService.class.getName());
-
-    // Credenciales por defecto de primera ejecución (seed)
-    private static final String DEFAULT_ADMIN_USERNAME = "admin";
-    private static final String DEFAULT_ADMIN_PASSWORD = "admin123";
+    private static final Logger logger = Logger.getLogger(BsConfig.class.getName());
 
     static {
         URL = "jdbc:sqlite:" + DB_DIR + File.separator + DB_FILE;
@@ -52,8 +56,9 @@ public class BsConfig {
     }
 
     /**
-     * Crea las tablas si no existen todavía y siembra el usuario administrador
-     * por defecto la primera vez (cuando la tabla users está vacía).
+     * En la primera ejecución copia la base pre-sembrada (esquema + administrador)
+     * desde los recursos de la aplicación. En instalaciones posteriores solo aplica
+     * las migraciones pendientes, sin tocar los datos del usuario.
      */
     private static void initDB() {
         File dir = new File(DB_DIR);
@@ -61,76 +66,52 @@ public class BsConfig {
             logger.info("Directorio de base de datos creado: " + DB_DIR);
         }
 
-        String createProducts = """
-                CREATE TABLE IF NOT EXISTS products (
-                    id    INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name  TEXT    NOT NULL,
-                    price REAL    NOT NULL DEFAULT 0.0,
-                    stock INTEGER NOT NULL DEFAULT 0
-                )
-                """;
-
-        String createUsers = """
-                CREATE TABLE IF NOT EXISTS users (
-                    id            INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username      TEXT    NOT NULL UNIQUE,
-                    password_hash TEXT    NOT NULL
-                )
-                """;
-
-        String createAuditLogs = """
-            CREATE TABLE IF NOT EXISTS audit_logs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT NOT NULL,
-                action_type TEXT NOT NULL,
-                description TEXT NOT NULL,
-                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-            );
-            """;
-
-        String createProductBarcodes = """
-            CREATE TABLE IF NOT EXISTS product_barcodes (
-                id         INTEGER PRIMARY KEY AUTOINCREMENT,
-                product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-                barcode    TEXT    NOT NULL UNIQUE
-            );
-            """;
-
-        try (Connection conn = DriverManager.getConnection(URL);
-                Statement stmt = conn.createStatement()) {
-            stmt.execute(createProducts);
-            stmt.execute(createUsers);
-            stmt.execute(createAuditLogs);
-            stmt.execute(createProductBarcodes);
-        } catch (SQLException e) {
-            throw new RuntimeException("Error al inicializar la base de datos", e);
+        File dbFile = new File(DB_DIR, DB_FILE);
+        if (!dbFile.exists()) {
+            copyBaseDatabase(dbFile);
         }
 
-        seedDefaultAdmin();
+        migrate();
+    }
+
+    private static void copyBaseDatabase(File dbFile) {
+        try (InputStream base = BsConfig.class.getResourceAsStream(BASE_DB_RESOURCE)) {
+            if (base == null) {
+                throw new IllegalStateException(
+                        "No se encontró la base de datos base en los recursos: " + BASE_DB_RESOURCE);
+            }
+            Files.copy(base, Path.of(dbFile.getPath()), StandardCopyOption.REPLACE_EXISTING);
+            logger.info("Base de datos inicial creada desde la base de distribución");
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo crear la base de datos inicial", e);
+        }
     }
 
     /**
-     * Crea el usuario administrador por defecto únicamente si la tabla users
-     * está vacía (primera ejecución / instalación limpia).
+     * Aplica las migraciones de esquema sobre instalaciones ya existentes,
+     * de modo que una base creada por versiones anteriores siga funcionando.
      */
-    private static void seedDefaultAdmin() {
-        String countSql = "SELECT COUNT(*) FROM users";
-        String insertSql = "INSERT INTO users (username, password_hash) VALUES (?, ?)";
-
-        try (Connection conn = getConnection();
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(countSql)) {
-            if (rs.next() && rs.getInt(1) == 0) {
-                String hash = LoginService.hashPassword(DEFAULT_ADMIN_PASSWORD);
-                try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
-                    ps.setString(1, DEFAULT_ADMIN_USERNAME);
-                    ps.setString(2, hash);
-                    ps.executeUpdate();
-                }
-                logger.info("Usuario administrador por defecto creado en primera ejecución");
+    private static void migrate() {
+        try (Connection conn = DriverManager.getConnection(URL);
+             Statement stmt = conn.createStatement()) {
+            if (!columnExists(conn, "users", "must_change_password")) {
+                stmt.execute("ALTER TABLE users ADD COLUMN must_change_password INTEGER NOT NULL DEFAULT 0");
+                logger.info("Migración aplicada: users.must_change_password");
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error al sembrar el usuario administrador", e);
+            throw new RuntimeException("Error al migrar la base de datos", e);
         }
+    }
+
+    private static boolean columnExists(Connection conn, String table, String column) throws SQLException {
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("PRAGMA table_info(" + table + ")")) {
+            while (rs.next()) {
+                if (column.equalsIgnoreCase(rs.getString("name"))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
