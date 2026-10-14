@@ -24,8 +24,21 @@ public class LoginService {
     this.userRepository = userRepository;
   }
 
+  /**
+   * Normaliza el nombre de usuario: descarta espacios accidentales al inicio o
+   * al fin (un "admin " no debe ser tratado distinto de "admin").
+   */
+  private static String normalizeUsername(String username) {
+    return username == null ? null : username.trim();
+  }
+
   public boolean authenticate(String username, String rawPassword) {
-    Optional<User> userOptional = userRepository.findByUsername(username);
+    String normalizedUsername = normalizeUsername(username);
+    if (normalizedUsername == null || rawPassword == null) {
+      return false;
+    }
+
+    Optional<User> userOptional = userRepository.findByUsername(normalizedUsername);
 
     if (userOptional.isEmpty()) {
       return false;
@@ -41,7 +54,11 @@ public class LoginService {
    * de sesión (usuarios recién sembrados en la instalación base).
    */
   public boolean mustChangePassword(String username) {
-    return userRepository.findByUsername(username)
+    String normalizedUsername = normalizeUsername(username);
+    if (normalizedUsername == null) {
+      return false;
+    }
+    return userRepository.findByUsername(normalizedUsername)
             .map(User::isMustChangePassword)
             .orElse(false);
   }
@@ -51,10 +68,11 @@ public class LoginService {
    * Devuelve false si la nueva contraseña no cumple la longitud mínima.
    */
   public boolean changePassword(String username, String rawPassword) {
-    if (rawPassword == null || rawPassword.length() < 6) {
+    String normalizedUsername = normalizeUsername(username);
+    if (normalizedUsername == null || rawPassword == null || rawPassword.length() < 6) {
       return false;
     }
-    userRepository.updatePassword(username, hashPassword(rawPassword), false);
+    userRepository.updatePassword(normalizedUsername, hashPassword(rawPassword), false);
     return true;
   }
 
