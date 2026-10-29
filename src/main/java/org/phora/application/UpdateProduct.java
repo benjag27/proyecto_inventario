@@ -1,5 +1,6 @@
 package org.phora.application;
 
+import org.phora.domain.model.BarcodeRules;
 import org.phora.domain.model.Product;
 import org.phora.domain.repository.ProductRepository;
 import org.phora.domain.service.AuditLogService;
@@ -21,7 +22,7 @@ public class UpdateProduct {
         Optional<Product> p = productRepository.findById(id);
         if (p.isEmpty()) return false;
 
-        List<String> normalized = AddProduct.normalizeBarcodes(barcodes);
+        List<String> normalized = BarcodeRules.normalizeAll(barcodes);
 
         Product product = p.get();
         product.setName(name);
