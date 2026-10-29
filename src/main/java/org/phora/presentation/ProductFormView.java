@@ -14,12 +14,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
+import org.phora.domain.model.BarcodeRules;
 import org.phora.domain.model.Product;
 import org.phora.infrastructure.AppContext;
 
@@ -385,6 +387,12 @@ public class ProductFormView {
         lblCodes.getStyleClass().add("menu-subheader");
 
         TextField txtCode = field("Código de barras");
+        txtCode.setTextFormatter(new TextFormatter<String>(change -> {
+            if (change.isContentChange() && change.getControlNewText().length() > BarcodeRules.MAX_LENGTH) {
+                return null;
+            }
+            return change;
+        }));
         Button btnAdd = primaryButton("Agregar código");
         btnAdd.setPadding(new Insets(10, 14, 10, 14));
 
@@ -396,7 +404,13 @@ public class ProductFormView {
         renderBarcodes(codes, list);
 
         btnAdd.setOnAction(e -> {
-            String code = txtCode.getText().trim();
+            String code;
+            try {
+                code = BarcodeRules.normalize(txtCode.getText());
+            } catch (IllegalArgumentException ex) {
+                showMessage(ex.getMessage(), true);
+                return;
+            }
             if (code.isEmpty()) {
                 showMessage("Ingresá un código de barras.", true);
                 return;

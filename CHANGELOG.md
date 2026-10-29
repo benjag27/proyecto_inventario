@@ -51,6 +51,12 @@
 - [ADD] `ProductPanelView`: nueva columna "Códigos" en el listado del inventario
 - [ADD] Test `ProductBarcodeTest` (alta sin códigos, alta con varios, agregar un código, eliminar uno solo manteniendo el resto, unicidad entre productos y borrado en cascada)
 
+### Códigos de barras — validación de entrada (scanner y tipeo)
+- [ADD] `BarcodeRules` (`domain/model`): único punto de definición de las reglas de un código de barras — largo máximo `64` (cubre EAN/UPC y Code128), solo caracteres ASCII imprimibles, `trim` y rechazo de duplicados dentro del mismo producto; admite códigos alfanuméricos variables tanto escaneados como tipeados
+- [CHANGE] `AddProduct` y `UpdateProduct` delegan en `BarcodeRules.normalizeAll()`; se elimina `AddProduct.normalizeBarcodes()` y el acoplamiento estático desde `UpdateProduct`
+- [CHANGE] `ProductFormView`: el campo de código usa un `TextFormatter` que impide tipear o pegar más de `BarcodeRules.MAX_LENGTH`, y al agregar valida con `BarcodeRules.normalize()` mostrando el mensaje de error
+- [ADD] Test `BarcodeRulesTest` (largo máximo y excedido, `trim`, nulos, caracteres de control, alfanumérico, duplicados)
+
 ### Organización del desarrollo (especificación orientada a IA)
 - [ADD] Estructura `spec/` para desarrollo orientado a IA: carpeta `constitution/` con los documentos de constitución del proyecto y carpeta `features/` para documentar cada feature futura (`NNN-nombre/` con `spec.md`, `plan.md` y `tasks.md`)
 - [ADD] `spec/constitution/mission.md` — qué se construye y para quién: sistema de inventario de escritorio local, multi-negocio, una PC por negocio, base de datos embebida (un `inventario.db` por instalación), modelo de uso admin + empleados
