@@ -18,6 +18,7 @@
 | Feature-002 — **Códigos de barras**: opcionales y múltiples por producto; alta y modificación con agregar/quitar uno solo | [#33](https://github.com/benjag27/proyecto_inventario/issues/33) | `in-progress` · implementada en `dev` · spec en `spec/features/002-codigos-de-barra/` |
 | Feature-003 — **Transiciones suaves**: paso continuo entre Productos y sus operaciones sin corte seco ni salto de tamaño | [#35](https://github.com/benjag27/proyecto_inventario/issues/35) | `done` · fade-in ~250 ms (`EASE_BOTH`) en `SceneManager.show` ·
 | Feature-004 — **Estética coherente de los formularios**: `ProductFormView` con cabecera del módulo, campos alineados, resultados presentables y tamaño estable | [#36](https://github.com/benjag27/proyecto_inventario/issues/36) | `done` · cabecera del módulo (`menu-header`) en `ProductFormView.createScene` ·
+| Feature-005 — **Login tolerante a espacios**: normalización (`trim`) del usuario en `LoginService` (`authenticate`, `mustChangePassword`, `changePassword`) | [#42](https://github.com/benjag27/proyecto_inventario/issues/42) | `done` · implementado en `dev` (commit `3c29ae2`) |
 
 **Hechas (implementadas y cerradas):**
 
@@ -29,6 +30,14 @@
 - [ADD] **Feature-002 documentada y versionada** con especificación completa (`spec/features/002-codigos-de-barra/` con `spec.md`, `plan.md` y `tasks.md`) e **issue creado en GitHub (#33)**; especifica códigos de barras opcionales y múltiples por producto (alta con cero o varios códigos, modificación con agregar/eliminar uno solo, unicidad); pendiente de implementación (flujo `feature/... → dev → main`)
 - [ADD] **Feature-003 documentada y versionada** con especificación completa (`spec/features/003-transiciones-suaves/`) e **issue creado en GitHub (#35)**; centraliza en `SceneManager.show(...)` una transición suave (fade/deslizamiento ~250 ms) para el paso Productos ↔ operaciones y evita el salto de tamaño de ventana (`sizeToScene`), a partir del análisis del corte seco actual y del re-escaleo por modo; pendiente de implementación
 - [ADD] **Feature-004 documentada y versionada** con especificación completa (`spec/features/004-estetica-formularios/`) e **issue creado en GitHub (#36)**; unifica la estética de los 5 modos de `ProductFormView` (cabecera del módulo en lugar de estilos de login, campos alineados, resultados de búsqueda presentables en vez de un `Label` multilínea, tamaño de ventana estable); colabora con la Feature-003; pendiente de implementación
+- [ADD] **Feature-005 documentada y versionada** con especificación completa (`spec/features/005-login-normalizado/` con `spec.md`, `plan.md` y `tasks.md`) e **issue creado en GitHub (#42)**; documenta el fix de robustez del login (normalización `trim` del nombre de usuario en `LoginService`, sin tocar la contraseña); implementado en `dev` (commit `3c29ae2`)
+
+### Autenticación — base distribuida y cambio obligatorio de contraseña (PR #39)
+- [ADD] Base de datos **pre-sembrada** que viaja como recurso (`src/main/resources/db/inventario_base.db`) con el esquema completo y el usuario `admin`; en la primera ejecución `BsConfig` la copia a `~/.phora_inventario/inventario.db`, de modo que el código de distribución ya no siembra credenciales
+- [ADD] `BsConfig.migrate()` aplica las migraciones pendientes sobre instalaciones existentes **sin tocar los datos del usuario**
+- [ADD] Flujo de **cambio obligatorio de contraseña**: columna `must_change_password` en `users`, `LoginService.mustChangePassword`/`changePassword`, vista `ChangePasswordView` y navegación `SceneManager.showChangePassword` desde `LoginView`
+- [ADD] `UserRepository.updatePassword(username, hash, mustChangePassword)` y `User.isMustChangePassword()`
+- [ADD] Test `BsConfigTest`: la base de distribución trae el `admin` con cambio de contraseña pendiente, las credenciales `admin`/`admin123` son válidas, y `changePassword` reemplaza el hash y limpia la marca
 
 ### Correcciones (fixes)
 - [FIX] `LoginService`: se normaliza el nombre de usuario con `trim()` en `authenticate`, `mustChangePassword` y `changePassword` (helper `normalizeUsername`), y se agregan guardas de `null`; un espacio accidental al inicio o fin impedía el ingreso (`WHERE username = 'admin '` nunca coincide con `admin`) y, además, podía omitir la pantalla de cambio obligatorio de contraseña
@@ -41,6 +50,12 @@
 - [ADD] `ProductFormView`: editor de códigos de barras en alta y modificación (campo + "Agregar código" y una fila por código con botón para quitarlo individualmente); el bloque es opcional (puede quedar vacío) y se precarga con los códigos existentes al modificar; las búsquedas (por ID y por nombre) muestran los códigos en el detalle
 - [ADD] `ProductPanelView`: nueva columna "Códigos" en el listado del inventario
 - [ADD] Test `ProductBarcodeTest` (alta sin códigos, alta con varios, agregar un código, eliminar uno solo manteniendo el resto, unicidad entre productos y borrado en cascada)
+
+### Códigos de barras — validación de entrada (scanner y tipeo)
+- [ADD] `BarcodeRules` (`domain/model`): único punto de definición de las reglas de un código de barras — largo máximo `64` (cubre EAN/UPC y Code128), solo caracteres ASCII imprimibles, `trim` y rechazo de duplicados dentro del mismo producto; admite códigos alfanuméricos variables tanto escaneados como tipeados
+- [CHANGE] `AddProduct` y `UpdateProduct` delegan en `BarcodeRules.normalizeAll()`; se elimina `AddProduct.normalizeBarcodes()` y el acoplamiento estático desde `UpdateProduct`
+- [CHANGE] `ProductFormView`: el campo de código usa un `TextFormatter` que impide tipear o pegar más de `BarcodeRules.MAX_LENGTH`, y al agregar valida con `BarcodeRules.normalize()` mostrando el mensaje de error
+- [ADD] Test `BarcodeRulesTest` (largo máximo y excedido, `trim`, nulos, caracteres de control, alfanumérico, duplicados)
 
 ### Organización del desarrollo (especificación orientada a IA)
 - [ADD] Estructura `spec/` para desarrollo orientado a IA: carpeta `constitution/` con los documentos de constitución del proyecto y carpeta `features/` para documentar cada feature futura (`NNN-nombre/` con `spec.md`, `plan.md` y `tasks.md`)
@@ -58,6 +73,8 @@
 - [ADD] Test automatizado `BsConfigTest` (JUnit 5) verificando el seed del admin en la primera ejecución y el formato no-plano del hash
 - [CHANGE] Flujo de ramas operativo definido en `Manual.md`: `main` queda reservado como rama de **distribución** (solo releases e instaladores, prohibido push directo); `dev` pasa a ser la rama de **producción activa** donde trabaja el equipo (base de `feature/*`, integración del día a día)
 - [ADD] Estado actual del producto (estructura `spec/`, documentación, fix de bootstrap de login y ruta de BD) sincronizado en la rama `dev` del remoto (`origin/dev`) para desarrollo colaborativo
+- [CHANGE] **Flujo de integración unificado (Pull Request):** se alinea `Manual.md` con `roadmap.md`. Se descarta el `git merge` local + `git push origin dev` (sección 3 del Manual) y queda como flujo oficial: `feature/...` → Push de la rama → **PR contra `dev`** → el **revisor** aprueba y mergea → el revisor decide `dev` → `main`. **Prohibido el push directo a `dev`/`main`.**
+- [CHANGE] **Backlog del `roadmap.md` depurado:** se elimina la tabla de features del backlog (001–005 ya estaban implementadas). Las features hechas no se duplican en el roadmap: su historial vive en este `CHANGELOG.md` y en los commits. El backlog queda reservado para features **pendientes** de planificar.
 
 ### Flujo de Productos (interfaz)
 - [CHANGE] Flujo del módulo Productos: al abrir **Productos** se muestra directamente el **listado del inventario** (buscador en vivo por nombre + contador) y las operaciones (**dar de alta, modificar, dar de baja, buscar por ID, buscar por nombre**) como **botones en un panel lateral**
