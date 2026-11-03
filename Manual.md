@@ -93,3 +93,86 @@ git push origin --delete feature/nombre-de-la-tarea
 ### Paso 5: Promoción a `main` (release)
 
 El paso de `dev` a `main` lo decide **exclusivamente el revisor**, mediante un Pull Request de `dev` hacia `main`, cuando el ciclo de desarrollo esté cerrado y estable. `main` solo aloja versiones listas para generar los instaladores oficiales.
+
+---
+
+## 4. EMPAQUETADO PARA LINUX (script)
+
+El empaquetado está automatizado en `scripts/empaquetar-linux.sh`, que encadena el protocolo de las fases 1 a 4: compilar y testear → `jlink` → `jpackage`.
+
+### Requisitos
+
+- JDK 17 o superior con `jpackage` (un JRE no alcanza).
+- Maven.
+- Para el `.deb`: `dpkg-deb` y `fakeroot` (`sudo apt install dpkg-dev fakeroot`).
+
+### Uso
+
+```bash
+# ambos artefactos (app-image + .deb), versión 1.0.0
+scripts/empaquetar-linux.sh
+
+# solo el instalador .deb
+scripts/empaquetar-linux.sh --type deb
+
+# solo la carpeta portable
+scripts/empaquetar-linux.sh --type app-image
+
+# versión y maintainer explícitos
+scripts/empaquetar-linux.sh --version 1.0.0 --maintainer "Phora <soporte@phora.local>"
+
+# sin tests / sin red
+scripts/empaquetar-linux.sh --skip-tests --offline
+```
+
+### Salidas
+
+| Artefacto | Ruta |
+|---|---|
+| App portable | `target/installer/inventario-app/` |
+| Instalador Debian/Ubuntu | `target/installer/inventario-app_<version>-1_amd64.deb` |
+
+### Verificación
+
+```bash
+# metadata del paquete
+dpkg-deb -f target/installer/inventario-app_1.0.0-1_amd64.deb Package Version Architecture
+
+# correr sin instalar, con HOME aparte para no tocar la base real
+HOME=/tmp/prueba-inventario target/installer/inventario-app/bin/inventario-app
+
+# instalar / desinstalar
+sudo apt install ./target/installer/inventario-app_1.0.0-1_amd64.deb
+sudo apt remove inventario-app
+```
+
+El script verifica que `db/inventario_base.db` quede dentro del runtime antes de empaquetar.
+
+### Windows
+
+`jpackage` solo genera instaladores del sistema donde corre. El `.msi` se compila en Windows con los mismos flags y `--type msi --win-menu --win-shortcut` (requiere WiX Toolset en el `PATH`).
+
+---
+
+## 5. PRIMERA RELEASE (v1.0.0)
+
+Una release se corta **desde `main`**, nunca desde una rama de trabajo.
+
+1. La PR de la feature se revisa y se mergea a `dev`.
+2. Se abre y mergea la PR `dev` → `main` (Paso 5).
+3. Se actualiza `main` local: `git checkout main && git pull origin main`.
+4. Se genera el instalador desde ese commit: `scripts/empaquetar-linux.sh --version 1.0.0`.
+5. Se crea el tag y la release con el `.deb` adjunto:
+
+```bash
+git tag -a v1.0.0 -m "Inventario 1.0.0"
+git push origin v1.0.0
+gh release create v1.0.0 \
+  target/installer/inventario-app_1.0.0-1_amd64.deb \
+  --title "Inventario 1.0.0" \
+  --generate-notes
+```
+
+6. Se borra la rama de la feature (local y remota).
+
+> El tag debe apuntar a un commit de `main`. `main` solo aloja versiones listas para generar los instaladores oficiales.

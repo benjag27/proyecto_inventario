@@ -18,7 +18,7 @@ Reglas:
 
 ## Estado actual (respaldado por el CHANGELOG)
 
-> Fase base — correspondiente a la release `1.0-SNAPSHOT` / `1.0.0-beta`. Todo esto está **implementado**.
+> Fase base — correspondiente a la release `1.0.0`. Todo esto está **implementado**.
 
 | Área | Estado |
 |---|---|
