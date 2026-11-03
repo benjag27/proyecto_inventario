@@ -354,7 +354,6 @@ public class ProductFormView {
 
         btn.setOnAction(e -> {
             String name = txtName.getText().trim();
-            // Usamos el caso de uso que ya tenés inyectado en el AppContext
             var result = context.getFindByNameUseCase().execute(name);
 
             if (!result.isEmpty()) {

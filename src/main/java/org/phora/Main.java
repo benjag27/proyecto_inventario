@@ -8,7 +8,6 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    // El contexto vive durante toda la ejecución de la app
     private AppContext context;
 
     public static void main(String[] args) {
@@ -24,7 +23,6 @@ public class Main extends Application {
 
         SceneManager sceneManager = new SceneManager(primaryStage, context);
 
-        // 3. Arrancamos el flujo
         sceneManager.showLogin();
 
     }

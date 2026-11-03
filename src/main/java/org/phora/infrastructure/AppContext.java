@@ -28,13 +28,11 @@ public class AppContext {
 
 
     public AppContext() {
-        // 1. Persistencia (infraestructura)
         this.productRepository = new ProductRepositoryImpl();
         this.auditLogRepository = new AuditLogRepositoryImpl();
 
         this.auditLogService = new AuditLogService(this.auditLogRepository);
 
-        // 2. Casos de uso de productos (aplicación)
         this.addProductUseCase = new AddProduct(this.productRepository, this.auditLogService);
         this.updateProductUseCase = new UpdateProduct(this.productRepository,this.auditLogService);
         this.deleteProductUseCase = new DeleteProduct(this.productRepository,this.auditLogService);

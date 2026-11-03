@@ -14,21 +14,12 @@ import java.sql.Statement;
 import java.util.logging.Logger;
 
 /**
- * Configuración de conexión a SQLite.
- * La base de datos vive en una carpeta oculta dentro del home del usuario
- * (~/.phora_inventario/inventario.db), independiente del directorio desde
- * donde se ejecute la app, evitando sobrescrituras por sincronizaciones o
- * actualizaciones, y soportando instalaciones con permisos restringidos
- * (ej: Program Files en Windows). No requiere instalación de ningún servidor.
- *
- * En la primera ejecución no se crea ni se siembra nada por código: se copia
- * la base pre-sembrada que viaja como recurso (/db/inventario_base.db), que ya
- * incluye el esquema completo y el usuario administrador. Así el código de
- * distribución no contiene credenciales ni lógica de seed.
+ * Conexión a SQLite. La base vive en ~/.phora_inventario/inventario.db y en la
+ * primera ejecución se copia desde el recurso /db/inventario_base.db, que ya
+ * trae el esquema y el administrador.
  */
 public class BsConfig {
 
-    // Ruta dinámica: la BD se crea en ~/.phora_inventario/, junto al programa
     private static final String DB_DIR = System.getProperty("user.home")
             + File.separator + ".phora_inventario";
     private static final String DB_FILE = "inventario.db";

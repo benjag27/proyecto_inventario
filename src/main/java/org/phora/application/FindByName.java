@@ -14,8 +14,8 @@ public class FindByName {
     }
 
     /**
-     * Returns all products whose name contains the given text (case-insensitive).
-     * For example, "papa" matches "Papa peruana", "Papa chips", "Papas fritas".
+     * Devuelve los productos cuyo nombre contiene el texto (sin distinguir
+     * mayúsculas). Por ejemplo, "papa" coincide con "Papa peruana".
      */
     public List<Product> execute(String name) {
         if (name == null || name.isBlank()) {

@@ -42,7 +42,6 @@ public class AuditLogView {
         top.setAlignment(Pos.CENTER_LEFT);
         top.setPadding(new Insets(0, 0, 20, 0));
 
-        // --- Configuración de la Tabla de Auditoría ---
         TableView<AuditLog> tabla = new TableView<>();
         tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
@@ -69,7 +68,6 @@ public class AuditLogView {
 
         tabla.getColumns().addAll(colId, colUser, colAccion, colDesc, colFecha);
 
-        // --- Carga de Datos desde el Servicio ---
         List<AuditLog> logsDb = context.getAuditLogService().getAllLogs();
         ObservableList<AuditLog> datosTabla = FXCollections.observableArrayList(logsDb);
         tabla.setItems(datosTabla);

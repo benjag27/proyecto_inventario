@@ -7,31 +7,6 @@
 
 ## [1.0.0] — 2026-11-03
 
-### Gestión de features (Issues)
-> Los responsables/assignees se definen **en cada issue de GitHub**. Esta tabla es la traza de estado para cualquier agente o integrante del equipo: qué falta, qué está en curso y qué se terminó.
-
-**Por hacer / En curso (backlog):**
-
-| Feature | Issue | Estado |
-|---|---|---|
-| Feature-001 — **Dar de baja seguro**: búsqueda por nombre/ID y confirmación explícita del ID al eliminar | [#32](https://github.com/benjag27/proyecto_inventario/issues/32) | `done` · implementado en `dev` (merge local) |
-| Feature-002 — **Códigos de barras**: opcionales y múltiples por producto; alta y modificación con agregar/quitar uno solo | [#33](https://github.com/benjag27/proyecto_inventario/issues/33) | `in-progress` · implementada en `dev` · spec en `spec/features/002-codigos-de-barra/` |
-| Feature-003 — **Transiciones suaves**: paso continuo entre Productos y sus operaciones sin corte seco ni salto de tamaño | [#35](https://github.com/benjag27/proyecto_inventario/issues/35) | `done` · fade-in ~250 ms (`EASE_BOTH`) en `SceneManager.show` ·
-| Feature-004 — **Estética coherente de los formularios**: `ProductFormView` con cabecera del módulo, campos alineados, resultados presentables y tamaño estable | [#36](https://github.com/benjag27/proyecto_inventario/issues/36) | `done` · cabecera del módulo (`menu-header`) en `ProductFormView.createScene` ·
-| Feature-005 — **Login tolerante a espacios**: normalización (`trim`) del usuario en `LoginService` (`authenticate`, `mustChangePassword`, `changePassword`) | [#42](https://github.com/benjag27/proyecto_inventario/issues/42) | `done` · implementado en `dev` (commit `3c29ae2`) |
-
-**Hechas (implementadas y cerradas):**
-
-| Feature | Referencia | Estado |
-|---|---|---|
-| Flujo de Productos (listado + operaciones laterales + interfaz ensanchada) | Integrada vía PR #31 (ver subsección *Flujo de Productos*) | `done` |
-
-- [ADD] **Feature-001 documentada y versionada** con especificación completa (`spec/features/001-baja-segura/` con `spec.md`, `plan.md` y `tasks.md`) e **issue creado en GitHub (#32)**; las carpetas de features se comparten en el repo para que el equipo implemente con el mismo plan (cada LLM que tome el issue trabaja sobre el mismo `spec.md`/`plan.md`); queda pendiente de implementación (flujo `feature/... → dev → main`)
-- [ADD] **Feature-002 documentada y versionada** con especificación completa (`spec/features/002-codigos-de-barra/` con `spec.md`, `plan.md` y `tasks.md`) e **issue creado en GitHub (#33)**; especifica códigos de barras opcionales y múltiples por producto (alta con cero o varios códigos, modificación con agregar/eliminar uno solo, unicidad); pendiente de implementación (flujo `feature/... → dev → main`)
-- [ADD] **Feature-003 documentada y versionada** con especificación completa (`spec/features/003-transiciones-suaves/`) e **issue creado en GitHub (#35)**; centraliza en `SceneManager.show(...)` una transición suave (fade/deslizamiento ~250 ms) para el paso Productos ↔ operaciones y evita el salto de tamaño de ventana (`sizeToScene`), a partir del análisis del corte seco actual y del re-escaleo por modo; pendiente de implementación
-- [ADD] **Feature-004 documentada y versionada** con especificación completa (`spec/features/004-estetica-formularios/`) e **issue creado en GitHub (#36)**; unifica la estética de los 5 modos de `ProductFormView` (cabecera del módulo en lugar de estilos de login, campos alineados, resultados de búsqueda presentables en vez de un `Label` multilínea, tamaño de ventana estable); colabora con la Feature-003; pendiente de implementación
-- [ADD] **Feature-005 documentada y versionada** con especificación completa (`spec/features/005-login-normalizado/` con `spec.md`, `plan.md` y `tasks.md`) e **issue creado en GitHub (#42)**; documenta el fix de robustez del login (normalización `trim` del nombre de usuario en `LoginService`, sin tocar la contraseña); implementado en `dev` (commit `3c29ae2`)
-
 ### Autenticación — base distribuida y cambio obligatorio de contraseña (PR #39)
 - [ADD] Base de datos **pre-sembrada** que viaja como recurso (`src/main/resources/db/inventario_base.db`) con el esquema completo y el usuario `admin`; en la primera ejecución `BsConfig` la copia a `~/.phora_inventario/inventario.db`, de modo que el código de distribución ya no siembra credenciales
 - [ADD] `BsConfig.migrate()` aplica las migraciones pendientes sobre instalaciones existentes **sin tocar los datos del usuario**
@@ -64,24 +39,10 @@
 - [CHANGE] `pom.xml` pasa de `1.0-SNAPSHOT` a `1.0.0` para cortar la primera release
 - [ADD] Primera release `v1.0.0` con el app-image portable (`.tar.gz`) y el instalador `.deb` adjuntos en GitHub Releases
 
-### Organización del desarrollo (especificación orientada a IA)
-- [ADD] Estructura `spec/` para desarrollo orientado a IA: carpeta `constitution/` con los documentos de constitución del proyecto y carpeta `features/` para documentar cada feature futura (`NNN-nombre/` con `spec.md`, `plan.md` y `tasks.md`)
-- [ADD] `spec/constitution/mission.md` — qué se construye y para quién: sistema de inventario de escritorio local, multi-negocio, una PC por negocio, base de datos embebida (un `inventario.db` por instalación), modelo de uso admin + empleados
-- [ADD] `spec/constitution/tech-stack.md` — tecnologías, convenciones y razones de cada decisión (SQLite embebida local, JavaFX 21, jlink/jpackage, Windows y Linux 50/50)
-- [ADD] `spec/constitution/roadmap.md` — orden de features con ciclo `spec.md → plan.md → tasks.md`; estado actual respaldado por este CHANGELOG y backlog "por definir"
-- [ADD] Carpeta `código/` como referencia estructural dentro del modelo de carpetas del proyecto
-- [ADD] Convenio normativo: todo cambio relevante futuro se registra en este archivo `CHANGELOG.md` con formato `[TIPO] Descripción`
-- [ADD] Racional de escalabilidad de la arquitectura por capas: las interfaces de repositorio (`domain/repository/`) son el punto de extensión para migrar la infraestructura de datos (SQLite local → base de datos en la nube) sin tocar la lógica de negocio (`domain` / `application`)
-- [ADD] Visión de evolución definida en `spec/constitution/roadmap.md`: (A) despliegue local embebido actual, (B) versión con base de datos en la nube no dependiente del archivo local, (C) multiusuario con concurrencia y consistencia de datos (transacciones, resolución de conflictos, roles), (D) asistente con inteligencia artificial y análisis económicos del negocio sobre sus propios datos
-- [CHANGE] Decisión de arquitectura de datos (pendiente de implementar): el `inventario.db` debe migrar de la ruta relativa (`jdbc:sqlite:inventario.db` en `BsConfig.java`) a una carpeta oculta dentro del home del usuario (`~/.phora_inventario/`), para soportar instalación en Windows (`Program Files` sin permisos de escritura), sobrevivir a reinstalaciones y actualizaciones, y evitar sobrescrituras de datos durante sincronizaciones del código
-- [CHANGE] **Ruta de la base de datos implementada:** `BsConfig.java` migra a `~/.phora_inventario/inventario.db` (carpeta oculta en el home, creada dinámicamente según el SO), independiente del directorio de ejecución — resuelve el login fallido al abrir la app desde terminal (el `.db` se creaba según el cwd)
-- [ADD] **Bootstrapping del usuario administrador:** en la primera ejecución (tabla `users` vacía), `BsConfig.seedDefaultAdmin()` crea `admin` / `admin123` con hashing PBKDF2; la contraseña nunca se guarda en texto plano
-- [CHANGE] `LoginService.hashPassword` y los helpers `pbkdf2` pasan a ser estáticos (funciones puras), permitiendo al bootstrap generar el hash sin instanciar el repositorio
-- [ADD] Test automatizado `BsConfigTest` (JUnit 5) verificando el seed del admin en la primera ejecución y el formato no-plano del hash
-- [CHANGE] Flujo de ramas operativo definido en `Manual.md`: `main` queda reservado como rama de **distribución** (solo releases e instaladores, prohibido push directo); `dev` pasa a ser la rama de **producción activa** donde trabaja el equipo (base de `feature/*`, integración del día a día)
-- [ADD] Estado actual del producto (estructura `spec/`, documentación, fix de bootstrap de login y ruta de BD) sincronizado en la rama `dev` del remoto (`origin/dev`) para desarrollo colaborativo
-- [CHANGE] **Flujo de integración unificado (Pull Request):** se alinea `Manual.md` con `roadmap.md`. Se descarta el `git merge` local + `git push origin dev` (sección 3 del Manual) y queda como flujo oficial: `feature/...` → Push de la rama → **PR contra `dev`** → el **revisor** aprueba y mergea → el revisor decide `dev` → `main`. **Prohibido el push directo a `dev`/`main`.**
-- [CHANGE] **Backlog del `roadmap.md` depurado:** se elimina la tabla de features del backlog (001–005 ya estaban implementadas). Las features hechas no se duplican en el roadmap: su historial vive en este `CHANGELOG.md` y en los commits. El backlog queda reservado para features **pendientes** de planificar.
+### Limpieza de documentación y comentarios
+- [REMOVE] Se elimina `spec/` (constitución y features) y la carpeta vacía `código/`: eran documentos de proceso que duplicaban el CHANGELOG y el Manual
+- [REMOVE] Se quitan comentarios obvios o ambiguos del código; se conservan los que explican decisiones no evidentes (seguridad, transacciones, ruta de la BD, reglas de códigos de barras)
+- [REMOVE] Se quita del CHANGELOG el protocolo de compilación duplicado (ahora vive en `scripts/empaquetar-linux.sh` y `Manual.md` §4)
 
 ### Flujo de Productos (interfaz)
 - [CHANGE] Flujo del módulo Productos: al abrir **Productos** se muestra directamente el **listado del inventario** (buscador en vivo por nombre + contador) y las operaciones (**dar de alta, modificar, dar de baja, buscar por ID, buscar por nombre**) como **botones en un panel lateral**
@@ -134,77 +95,6 @@
 
 ---
 
-##  PROTOCOLO OBLIGATORIO DE COMPILACIÓN Y DESPLIEGUE
+## COMPILACIÓN Y EMPAQUETADO
 
-Queda estrictamente reglamentado el uso de las siguientes fases de comandos de forma aislada e incremental para la generación correcta de ejecutables distributivos limpios.
-
-### Fase 1: Compilación Básica y Ejecución en Entorno de Desarrollo
-Para levantar la aplicación de forma rápida y probar cambios locales del código fuente:
-```bash
-mvn clean javafx:run
-```
-### Fase 2: Generación del JRE Autocontenido y Reducido (jlink)
-
-Este paso realiza el enlazado modular aislando un entorno virtual de Java mínimo y optimizado para la aplicación, libre de dependencias del JRE del sistema operativo destino:
-
-Bash
-
-```
-mvn clean javafx:jlink
-```
-
-- **Resultado operativo esperado:** Generación completa de la estructura binaria en el directorio relativo: `target/inventario-app/`
-### Fase 3: Ejecución Manual y Validación Técnica del Runtime
-
-Antes de empaquetar un instalador, es imperativo validar de forma aislada que el entorno generado por `jlink` levanta de forma correcta ejecutando el script nativo según su plataforma:
-
-- **En entornos de desarrollo Windows (CMD / PowerShell):**
-```
-    target\inventario-app\bin\inventario.bat
-    
-```
-
-- **En entornos de desarrollo Unix / Linux / macOS (Terminal):*
-    ```
-    chmod +x target/inventario-app/bin/inventario
-    ./target/inventario-app/bin/inventario
-    ```
-
-
-### Fase 4: Empaquetado Formal del Instalador de Producción (jpackage)
-
-Una vez verificado que el runtime modular es estable, proceda a invocar la herramienta CLI `jpackage` nativa de su JDK de forma aislada para compilar el empaquetado final. Los instaladores resultantes se depositarán de forma estricta en la ruta técnica asignada: `target/installer/`
-
-#### 💻 Ejecución en Entornos Windows (Generación de Instalador ejecutable `.msi`)
-
-
-```
-jpackage --type msi ^
-  --runtime-image target/inventario-app ^
-  --module org.phora/org.phora.Main ^
-  --name "InventarioApp" ^
-  --vendor "Phora" ^
-  --app-version 1.0.0 ^
-  --dest target/installer ^
-  --win-dir-chooser ^
-  --win-shortcut
-```
-
-_(Nota Windows: Requiere tener instalado previamente **Wix Toolset** en el PATH del sistema para evitar excepciones de compilación)._
-
-#### 🐧 Ejecución en Entornos Linux (Generación de Paquete distribuible `.deb` para Debian/Ubuntu)
-
-
-
-```
-jpackage --type deb \
-  --runtime-image target/inventario-app \
-  --module org.phora/org.phora.Main \
-  --name "Inventario" \
-  --vendor "Phora" \
-  --app-version 1.0.0 \
-  --dest target/installer \
-  --linux-shortcut
-```
-
-_(Nota Linux: Requiere contar con las herramientas nativas del subsistema `dpkg-dev` activas en la terminal)._
+El flujo está automatizado en `scripts/empaquetar-linux.sh` y documentado en `Manual.md` §4.

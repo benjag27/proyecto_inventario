@@ -5,9 +5,8 @@ public class AuditLog {
     private String username;
     private String actionType;
     private String description;
-    private String timestamp; // Usamos String por simplicidad con SQLite o LocalDateTime
+    private String timestamp;
 
-    // Constructor completo
     public AuditLog(int id, String username, String actionType, String description, String timestamp) {
         this.id = id;
         this.username = username;
@@ -23,7 +22,6 @@ public class AuditLog {
         this.description = description;
     }
 
-    // Getters
     public int getId() { return id; }
     public String getUsername() { return username; }
     public String getActionType() { return actionType; }
