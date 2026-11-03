@@ -59,9 +59,10 @@
 
 ### Empaquetado y distribución (Linux)
 - [ADD] `scripts/empaquetar-linux.sh`: automatiza el protocolo de despliegue (compilar + testear → `jlink` → `jpackage`) con opciones `--type app-image|deb|both`, `--version`, `--name`, `--dest`, `--maintainer`, `--skip-tests` y `--offline`; valida JDK 17+, herramientas de `.deb` y que `db/inventario_base.db` quede dentro del runtime antes de empaquetar
+- [ADD] El script genera `Inventario-<version>-linux-x64.tar.gz`, el app-image portable que se adjunta a la release para descargar, descomprimir y ejecutar sin instalar nada
 - [ADD] `Manual.md` §4 (empaquetado para Linux) y §5 (primera release): requisitos, comandos, salidas, verificación, instalación/desinstalación y pasos del tag + GitHub Release
 - [CHANGE] `pom.xml` pasa de `1.0-SNAPSHOT` a `1.0.0` para cortar la primera release
-- [ADD] Primera release `v1.0.0` con el instalador `.deb` adjunto en GitHub Releases
+- [ADD] Primera release `v1.0.0` con el app-image portable (`.tar.gz`) y el instalador `.deb` adjuntos en GitHub Releases
 
 ### Organización del desarrollo (especificación orientada a IA)
 - [ADD] Estructura `spec/` para desarrollo orientado a IA: carpeta `constitution/` con los documentos de constitución del proyecto y carpeta `features/` para documentar cada feature futura (`NNN-nombre/` con `spec.md`, `plan.md` y `tasks.md`)
@@ -199,7 +200,7 @@ _(Nota Windows: Requiere tener instalado previamente **Wix Toolset** en el PATH 
 jpackage --type deb \
   --runtime-image target/inventario-app \
   --module org.phora/org.phora.Main \
-  --name "inventario-app" \
+  --name "Inventario" \
   --vendor "Phora" \
   --app-version 1.0.0 \
   --dest target/installer \
