@@ -22,7 +22,7 @@ ROOT_DIR="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 cd -- "$ROOT_DIR"
 
 # --- Valores por defecto (alineados con el CHANGELOG del proyecto) ----------
-APP_NAME="inventario-app"
+APP_NAME="Inventario"
 APP_VERSION="1.0.0"
 DEST="target/installer"
 TYPE="both"
@@ -50,7 +50,7 @@ Uso:
 Opciones:
   -v, --version X.Y.Z    Versión numérica de la app (default: 1.0.0)
   -t, --type TIPO        app-image | deb | both (default: both)
-  -n, --name NOMBRE      Nombre del paquete y del launcher (default: inventario-app)
+  -n, --name NOMBRE      Nombre visible del paquete y del launcher (default: Inventario)
   -d, --dest DIR         Carpeta de salida (default: target/installer)
   -m, --maintainer TXT   Maintainer del .deb, ej. "Nombre <mail@dominio>"
       --skip-tests       No ejecuta los tests de Maven
@@ -64,7 +64,8 @@ Requisitos:
 
 Salidas:
   app-image -> DIR/<nombre>/            (carpeta portable)
-  deb       -> DIR/<nombre>_<version>-1_<arch>.deb
+  app-image -> DIR/<nombre>-<version>-linux-x64.tar.gz  (asset de release)
+  deb       -> DIR/<nombre-en-minusculas>_<version>-1_<arch>.deb
 
 Notas:
   - El .msi de Windows no se puede generar desde Linux.
@@ -101,8 +102,11 @@ case "$TYPE" in
   *) die "tipo inválido '$TYPE' (elegí app-image, deb o both)" ;;
 esac
 
-[[ "$APP_NAME" =~ ^[a-z0-9][a-z0-9-]*$ ]] \
-  || die "nombre inválido '$APP_NAME' (minúsculas, números y guiones)"
+[[ "$APP_NAME" =~ ^[A-Za-z0-9][A-Za-z0-9-]*$ ]] \
+  || die "nombre inválido '$APP_NAME' (letras, números y guiones)"
+
+# jpackage deriva el nombre del paquete .deb en minúsculas
+DEB_BASE="${APP_NAME,,}"
 
 need java     "instalá un JDK 17 o superior"
 need mvn      "instalá Maven"
@@ -157,11 +161,16 @@ if [[ "$TYPE" == "app-image" || "$TYPE" == "both" ]]; then
   info "Generando app-image portable en $DEST/$APP_NAME"
   rm -rf -- "$DEST/$APP_NAME"
   jpackage --type app-image "${COMMON[@]}"
+
+  ARCHIVE="$DEST/${APP_NAME}-${APP_VERSION}-linux-x64.tar.gz"
+  info "Empaquetando el app-image para la release: $ARCHIVE"
+  rm -f -- "$ARCHIVE"
+  tar -C "$DEST" -czf "$ARCHIVE" "$APP_NAME"
 fi
 
 if [[ "$TYPE" == "deb" || "$TYPE" == "both" ]]; then
   info "Generando instalador .deb en $DEST"
-  rm -f -- "$DEST/${APP_NAME}_"*.deb
+  rm -f -- "$DEST/${DEB_BASE}_"*.deb
   DEB_ARGS=(--type deb "${COMMON[@]}" --linux-shortcut --linux-menu-group "Office")
   if [[ -n "$MAINTAINER" ]]; then
     DEB_ARGS+=(--linux-deb-maintainer "$MAINTAINER")
@@ -173,10 +182,14 @@ fi
 info "Listo. Artefactos en $DEST"
 ls -lh "$DEST"
 
+if compgen -G "$DEST/${APP_NAME}-*-linux-x64.tar.gz" >/dev/null; then
+  printf '\nPortable (sin instalar): descomprimir y ejecutar %s/%s/bin/%s\n' \
+    "$DEST" "$APP_NAME" "$APP_NAME"
+fi
+
 if compgen -G "$DEST/*.deb" >/dev/null; then
   DEB="$(ls "$DEST"/*.deb | head -1)"
   printf '\nInstalar:     sudo apt install ./%s\n' "$DEB"
-  printf 'Desinstalar:  sudo apt remove %s\n' "$APP_NAME"
+  printf 'Desinstalar:  sudo apt remove %s\n' "$DEB_BASE"
   printf 'Metadata:     dpkg-deb -f "%s" Package Version Architecture\n' "$DEB"
-  printf 'Probar sin instalar: %s/%s/bin/%s\n' "$DEST" "$APP_NAME" "$APP_NAME"
 fi

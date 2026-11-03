@@ -129,22 +129,26 @@ scripts/empaquetar-linux.sh --skip-tests --offline
 
 | Artefacto | Ruta |
 |---|---|
-| App portable | `target/installer/inventario-app/` |
-| Instalador Debian/Ubuntu | `target/installer/inventario-app_<version>-1_amd64.deb` |
+| App portable (carpeta) | `target/installer/Inventario/` |
+| App portable comprimida (**asset de release**) | `target/installer/Inventario-1.0.0-linux-x64.tar.gz` |
+| Instalador Debian/Ubuntu | `target/installer/inventario_1.0.0-1_amd64.deb` |
 
 ### Verificación
 
 ```bash
-# metadata del paquete
-dpkg-deb -f target/installer/inventario-app_1.0.0-1_amd64.deb Package Version Architecture
+# portable: descomprimir y ejecutar, sin instalar nada
+tar -xzf target/installer/Inventario-1.0.0-linux-x64.tar.gz -C /tmp
+HOME=/tmp/prueba-inventario /tmp/Inventario/bin/Inventario
 
-# correr sin instalar, con HOME aparte para no tocar la base real
-HOME=/tmp/prueba-inventario target/installer/inventario-app/bin/inventario-app
+# metadata del paquete .deb
+dpkg-deb -f target/installer/inventario_1.0.0-1_amd64.deb Package Version Architecture
 
 # instalar / desinstalar
-sudo apt install ./target/installer/inventario-app_1.0.0-1_amd64.deb
-sudo apt remove inventario-app
+sudo apt install ./target/installer/inventario_1.0.0-1_amd64.deb
+sudo apt remove inventario
 ```
+
+La carpeta `Inventario/` es autocontenida: incluye su propio runtime de Java, así que se puede copiar a otra máquina Linux y ejecutar sin instalar Java. El `.tar.gz` preserva el permiso de ejecución de `bin/Inventario`.
 
 El script verifica que `db/inventario_base.db` quede dentro del runtime antes de empaquetar.
 
@@ -162,13 +166,14 @@ Una release se corta **desde `main`**, nunca desde una rama de trabajo.
 2. Se abre y mergea la PR `dev` → `main` (Paso 5).
 3. Se actualiza `main` local: `git checkout main && git pull origin main`.
 4. Se genera el instalador desde ese commit: `scripts/empaquetar-linux.sh --version 1.0.0`.
-5. Se crea el tag y la release con el `.deb` adjunto:
+5. Se crea el tag y la release adjuntando el **app-image portable** (descargar → descomprimir → ejecutar, sin instalar nada) y, opcionalmente, el `.deb`:
 
 ```bash
 git tag -a v1.0.0 -m "Inventario 1.0.0"
 git push origin v1.0.0
 gh release create v1.0.0 \
-  target/installer/inventario-app_1.0.0-1_amd64.deb \
+  target/installer/Inventario-1.0.0-linux-x64.tar.gz \
+  target/installer/inventario_1.0.0-1_amd64.deb \
   --title "Inventario 1.0.0" \
   --generate-notes
 ```
