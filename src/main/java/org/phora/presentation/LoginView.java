@@ -13,9 +13,8 @@ import javafx.scene.layout.VBox;
 import org.phora.domain.service.LoginService;
 
 /**
- * Pantalla de inicio de sesión. Solo construye su Scene y, ante un
- * login exitoso, le pide al SceneManager que navegue al menú principal.
- * No conoce el Stage directamente (mismo patrón que ProductView.java).
+ * Pantalla de inicio de sesión. Construye su Scene y delega la navegación
+ * al SceneManager.
  */
 public class LoginView {
 
@@ -57,7 +56,6 @@ public class LoginView {
     btnLogin.setMaxWidth(Double.MAX_VALUE);
     btnLogin.setOnAction(e -> onLoginClick(txtUsername.getText(), txtPassword.getText()));
 
-    // Enter en cualquiera de los dos campos también intenta loguear
     txtUsername.setOnAction(e -> btnLogin.fire());
     txtPassword.setOnAction(e -> btnLogin.fire());
 

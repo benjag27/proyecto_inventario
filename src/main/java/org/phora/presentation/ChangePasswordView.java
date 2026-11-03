@@ -57,7 +57,6 @@ public class ChangePasswordView {
     btnGuardar.setMaxWidth(Double.MAX_VALUE);
     btnGuardar.setOnAction(e -> onGuardarClick(txtNueva.getText(), txtRepeticion.getText()));
 
-    // Enter en cualquiera de los dos campos también intenta guardar
     txtNueva.setOnAction(e -> btnGuardar.fire());
     txtRepeticion.setOnAction(e -> btnGuardar.fire());
 

@@ -111,8 +111,7 @@ public class SceneManager {
         ParallelTransition abrir = new ParallelTransition(scene.getRoot(), fade, zoom);
         abrir.play();
 
-        /* OTRA forma optimizada: sizeToScene() ajusta el Stage al tamaño EXACTO que el
-           contenido necesita (JavaFX lo computa solo, nunca se corta) y recién ahí lockSize */
+        // sizeToScene() ajusta el Stage al tamaño exacto del contenido; después se bloquea.
         stage.sizeToScene();
         lockSize(stage.getWidth(), stage.getHeight());
         stage.centerOnScreen();

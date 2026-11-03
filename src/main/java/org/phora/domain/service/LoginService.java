@@ -24,10 +24,6 @@ public class LoginService {
     this.userRepository = userRepository;
   }
 
-  /**
-   * Normaliza el nombre de usuario: descarta espacios accidentales al inicio o
-   * al fin (un "admin " no debe ser tratado distinto de "admin").
-   */
   private static String normalizeUsername(String username) {
     return username == null ? null : username.trim();
   }
@@ -104,7 +100,6 @@ public class LoginService {
       byte[] salt = Base64.getDecoder().decode(parts[1].trim());
       byte[] hash = Base64.getDecoder().decode(parts[2].trim());
 
-      // PASAMOS las iteraciones y el tamaño del hash recuperados de la BD
       byte[] testHash = pbkdf2(rawPassword.toCharArray(), salt, iterations, hash.length * 8);
 
       int diff = hash.length ^ testHash.length;
@@ -117,12 +112,10 @@ public class LoginService {
     }
   }
 
-  // Sobrecargamos pbkdf2 para la creación de nuevos hashes
   private static byte[] pbkdf2(char[] password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
     return pbkdf2(password, salt, ITERATIONS, KEY_LENGTH);
   }
 
-  // Método definitivo que procesa dinámicamente según lo requerido
   private static byte[] pbkdf2(char[] password, byte[] salt, int iterations, int keyLength) throws NoSuchAlgorithmException, InvalidKeySpecException {
     PBEKeySpec spec = new PBEKeySpec(password, salt, iterations, keyLength);
     SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
